@@ -118,8 +118,6 @@ export default function DogDetails({ dogId }: DogDetailsProps) {
                     <View style={{ width: "100%", maxWidth: 500, marginHorizontal: "auto" }}>
                         <View style={{ flexDirection: "column" }}>
                             <DogDetailsCard dog={dog} />
-
-                            <Spacer />
                         </View>
                     </View>
                 </View>

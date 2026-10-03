@@ -28,7 +28,7 @@ export default function MockDogRepository(): DogRepository {
             breed: "Border Collie",
             gender: "female",
             size: "mid",
-            imageURL: "https://images.unsplash.com/photo-1508882167173-6c7a5c6b0f17",
+            imageURL: "https://images.unsplash.com/photo-1517849845537-4d257902454a",
             description: "An energetic and clever companion who enjoys learning tricks.",
         },
         {

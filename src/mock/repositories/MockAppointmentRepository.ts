@@ -43,7 +43,6 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         ["appointment-010", "dog-005", "volunteer-002", "2025-03-10T10:00:00.000Z", "completed", 2],
         ["appointment-011", "dog-006", "volunteer-001", "2025-03-19T10:00:00.000Z", "completed", 5],
         ["appointment-012", "dog-006", "volunteer-002", "2025-03-22T10:00:00.000Z", "completed", 1],
-        ["appointment-013", "dog-006", "volunteer-001", "2025-03-25T10:00:00.000Z", "completed", 2],
         ["appointment-014", "dog-006", "volunteer-002", "2025-03-28T10:00:00.000Z", "completed", 3],
         ["appointment-015", "dog-006", "volunteer-001", "2025-03-31T10:00:00.000Z", "completed", 4],
         ["appointment-016", "dog-007", "volunteer-002", "2025-04-12T10:00:00.000Z", "completed", 2],

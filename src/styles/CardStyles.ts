@@ -1,3 +1,4 @@
+import colors from "./Colors";
 import { StylesheetCollection } from "./StylesheetCollection";
 
 export const cardStylesCollection = StylesheetCollection.create({
@@ -59,6 +60,8 @@ export const cardStylesCollection = StylesheetCollection.create({
     height: "100%",
 
     resizeMode: "cover",
+
+    backgroundColor: colors.highlightColor,
 
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
