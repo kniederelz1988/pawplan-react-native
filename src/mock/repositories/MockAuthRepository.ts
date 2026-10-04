@@ -9,7 +9,7 @@ export default function MockAuthRepository(): AuthRepository {
     ]
     const userMap = new Map(userData.map((user) => [user.email, user] as const))
 
-    
+
 
     async function signIn(email: string, password: string): Promise<AuthUser> {
         const userData = userMap.get(email)
@@ -28,7 +28,7 @@ export default function MockAuthRepository(): AuthRepository {
     async function signOut(): Promise<void> {}
 
     function subscribeToUser(listener: AuthListener) {
-        listener("error", null)
+        listener("success", null)
         return () => {}
     }
 

@@ -30,7 +30,6 @@ const dogConverter: FirestoreDataConverter<Dog, FirebaseDogDTO> = {
         }
 
         return {
-            id: data.id,
             name: data.name,
             birthday: dateValueToTimestamp(data.birthday),
             shelterDate: dateValueToTimestamp(data.shelterDate),
@@ -58,7 +57,7 @@ const dogConverter: FirestoreDataConverter<Dog, FirebaseDogDTO> = {
             2: "big"
         }
         return {
-            id: data.id,
+            id: snap.id,
             name: data.name,
             birthday: timestampToDateValue(data.birthday),
             shelterDate: timestampToDateValue(data.shelterDate),

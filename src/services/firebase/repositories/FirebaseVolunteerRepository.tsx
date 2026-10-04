@@ -18,7 +18,6 @@ import { dateValueToTimestamp, timestampToDateValue } from "@/services/firebase/
 const volunteerConverter: FirestoreDataConverter<Volunteer, FirebaseVolunteerDTO> = {
     toFirestore: (data: Volunteer) => {
         return {
-            id: data.id,
             userId: data.userId,
             birthday: dateValueToTimestamp(data.birthday),
             volunteerSince: dateValueToTimestamp(data.volunteerSince),
@@ -27,10 +26,8 @@ const volunteerConverter: FirestoreDataConverter<Volunteer, FirebaseVolunteerDTO
     },
     fromFirestore: (snap: QueryDocumentSnapshot) => {
         const d = snap.data() as FirebaseVolunteerDTO
-        d.id = snap.id
-
         return {
-            id: d.id,
+            id: snap.id,
             userId: d.userId,
             birthday: timestampToDateValue(d.birthday),
             volunteerSince: timestampToDateValue(d.volunteerSince),

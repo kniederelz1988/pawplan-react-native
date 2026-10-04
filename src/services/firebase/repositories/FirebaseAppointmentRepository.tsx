@@ -42,7 +42,6 @@ const appointmentStatusFromNumber = (status: number): AppointmentStatusEnum => {
 const appointmentConverter: FirestoreDataConverter<Appointment, FirebaseAppointmentDTO> = {
     toFirestore: (data: Appointment) => {
         return {
-            id: data.id,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
             createdAt: dateValueToTimestamp(data.createdAt),

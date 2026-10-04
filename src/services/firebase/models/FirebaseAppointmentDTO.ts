@@ -3,7 +3,6 @@ import { Timestamp } from "@react-native-firebase/firestore"
 declare type FirebaseTimestamp = Timestamp
 
 export declare type FirebaseAppointmentDTO = {
-    id?: string
     dogId: string,
     volunteerId: string,
     createdAt: FirebaseTimestamp,

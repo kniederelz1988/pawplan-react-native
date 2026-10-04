@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext } from "react";
+import { PropsWithChildren, createContext, useMemo } from "react";
 
 import { AppDependencies } from "@/shared/dependencies/AppDependencies";
 
@@ -24,9 +24,13 @@ interface Props extends PropsWithChildren {
     dependencies?: AppDependencies
 }
 
-export function AppDependenciesProvider({ children, dependencies = createDefaultDependencies() }: Props) {
+export function AppDependenciesProvider({ children, dependencies }: Props) {
+    const defaultDependencies = useMemo(() => createDefaultDependencies(), [])
+
+    const value = dependencies ?? defaultDependencies
+
     return (
-        <AppDependenciesContext.Provider value={dependencies}>
+        <AppDependenciesContext.Provider value={value}>
             {children}
         </AppDependenciesContext.Provider>
     );

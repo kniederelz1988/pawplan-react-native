@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useCallback, useEffect } from "react"
 import { RoutePath, useRoute, useRouter } from "expo-router"
 import { useNavigationParameters } from "@/hooks/useNavigationParameters"
 
@@ -23,39 +23,7 @@ export default function useNavigation() {
 
     const { intentParameters, routeParameters } = useNavigationParameters()
 
-    useEffect(() => {
-        const timeout = setTimeout(initIntent, 100)
-
-        return () => clearTimeout(timeout)
-    })
-
-    function initIntent() {
-        if (!router.canGoBack())
-            return toSource("keep", { intentInit: "true" })
-
-        if (intentParameters.intent && intentParameters.intentInit)
-            return followIntent("keep")
-    }
-
-    function followIntent(intentFlag: IntentFlag, params?: NavigationParams): boolean {
-        if (!intentParameters.intent)
-            return false
-
-        return replace(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
-    }
-    function toSource(intentFlag: IntentFlag, params?: NavigationParams): boolean {
-        if (!intentParameters.intent || !intentParameters.intentSource)
-            return false
-
-        console.log("TEST1")
-        if (dismiss(intentParameters.intentSource, { flag: intentFlag, data: intentParameters.intent }, params ))
-            return true
-
-        console.log("TEST2")
-        return replace(intentParameters.intentSource, { flag: intentFlag, data: intentParameters.intent }, params)
-    }
-
-    function push(path: RoutePath, intent: IntentData, params?: NavigationParams): boolean {
+    const push = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
         switch (intent.flag) {
             case "keep":
                 router.push({ pathname: path, params: { source: intentParameters.intentSource, intent: intentParameters.intent, ...routeParameters, ...params } })
@@ -69,8 +37,8 @@ export default function useNavigation() {
         }
 
         return true
-    }
-    function replace(path: RoutePath, intent: IntentData, params?: NavigationParams): boolean {
+    }, [router, route, intentParameters, routeParameters])
+    const replace = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
         switch (intent.flag) {
             case "keep":
                 router.replace({ pathname: path, params: { intent: intentParameters.intent, source: intentParameters.intentSource, ...routeParameters, ...params } })
@@ -84,9 +52,8 @@ export default function useNavigation() {
         }
 
         return true
-    }
-
-    function dismiss(path: RoutePath, intent: IntentData, params?: NavigationParams): boolean {
+    }, [router, route, intentParameters, routeParameters])
+    const dismiss = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
         if (!router.canDismiss())
             return false
 
@@ -103,15 +70,48 @@ export default function useNavigation() {
         }
 
         return true
-    }
-    
-    function back(): boolean {
+    }, [router, route, intentParameters, routeParameters])
+
+    const followIntent = useCallback((intentFlag: IntentFlag, params?: NavigationParams): boolean => {
+        if (!intentParameters.intent)
+            return false
+
+        return replace(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
+    }, [intentParameters, replace])
+
+    const toSource = useCallback((intentFlag: IntentFlag, params?: NavigationParams): boolean => {
+        if (!intentParameters.intent || !intentParameters.intentSource)
+            return false
+
+        if (dismiss(intentParameters.intentSource, { flag: intentFlag, data: intentParameters.intent }, params))
+            return true
+
+        return replace(intentParameters.intentSource, { flag: intentFlag, data: intentParameters.intent }, params)
+    }, [intentParameters, dismiss, replace])
+
+    const back = useCallback((): boolean => {
         if (!router.canGoBack())
             return false
 
         router.back()
         return true
-    }
+    }, [router])
+
+    const initIntent = useCallback(() => {
+        if (!router.canGoBack())
+            return toSource("keep", { intentInit: "true" })
+
+        if (intentParameters.intent && intentParameters.intentInit)
+            return followIntent("keep")
+    }, [router, intentParameters, toSource, followIntent])
+
+    useEffect(() => {
+        const timeout = setTimeout(initIntent, 100)
+
+        return () => clearTimeout(timeout)
+    })
+
+
 
     return { routeParameters, followIntent, toSource, replace, push, back }
 }
