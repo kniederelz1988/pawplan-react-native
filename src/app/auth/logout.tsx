@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react"
+import { useEffect } from "react"
 import { Pressable } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
@@ -20,7 +20,7 @@ export default function LogoutModal() {
             return
 
         followIntent()
-    }, [isLoggedIn, navigation])
+    }, [isLoggedIn, followIntent])
 
     return (
         <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>

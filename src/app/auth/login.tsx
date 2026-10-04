@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react"
+import { useEffect } from "react"
 import { Pressable } from "react-native"
 
 import LogInDialogue from "@/features/auth/components/LogInDialogue"

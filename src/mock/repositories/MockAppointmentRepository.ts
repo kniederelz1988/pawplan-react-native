@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-
 import { Volunteer } from "@/domain/Volunteer"
 
 import { Dog } from "@/domain/Dog"
@@ -72,43 +70,37 @@ export default function MockAppointmentRepository(): AppointmentRepository {
     const statuses = new Map<string, AppointmentStatus>()
     const ratings = new Map<string, AppointmentRating>()
 
-    useEffect(() => {
-        appointments.clear()
-        statuses.clear()
-        ratings.clear()
-
-        for (const [id, dogId, volunteerId, dateString, status, rating, comment] of seedRows) {
-            const date = toCalendarDateTime(parseAbsoluteToLocal(dateString))
-            const appointment: Appointment = {
-                id,
-                dogId,
-                volunteerId,
-                createdAt: now(),
-                date,
-                type: "walk",
-            }
-            appointments.set(id, appointment)
-            statuses.set(id, {
+    for (const [id, dogId, volunteerId, dateString, status, rating, comment] of seedRows) {
+        const date = toCalendarDateTime(parseAbsoluteToLocal(dateString))
+        const appointment: Appointment = {
+            id,
+            dogId,
+            volunteerId,
+            createdAt: now(),
+            date,
+            type: "walk",
+        }
+        appointments.set(id, appointment)
+        statuses.set(id, {
+            appointmentId: id,
+            dogId,
+            volunteerId,
+            status,
+            updateAt: date,
+            updatedBy: volunteerId,
+        })
+        if (rating !== undefined) {
+            ratings.set(id, {
                 appointmentId: id,
                 dogId,
                 volunteerId,
-                status,
                 updateAt: date,
-                updatedBy: volunteerId,
+                rating,
+                comment: comment ?? ratingComments[rating - 1],
             })
-            if (rating !== undefined) {
-                ratings.set(id, {
-                    appointmentId: id,
-                    dogId,
-                    volunteerId,
-                    updateAt: date,
-                    rating,
-                    comment: comment ?? ratingComments[rating - 1],
-                })
-            }
         }
-    })
-
+    }
+    
     function getNextAppointmentId(): string {
         let number = 1
         let id = `appointment-${String(number).padStart(3, "0")}`

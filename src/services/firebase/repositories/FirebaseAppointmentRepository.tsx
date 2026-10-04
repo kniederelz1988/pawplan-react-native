@@ -454,7 +454,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         try {
-            const ratingCollection = doc(collection(firestore, ratingCollectionName))
+            const ratingCollection = collection(firestore, ratingCollectionName)
                 .withConverter(ratingsConverter)
 
             await setDoc(doc(ratingCollection, appointment.id), rating)
@@ -478,7 +478,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         try {
-            const ratingCollection = doc(collection(firestore, ratingCollectionName))
+            const ratingCollection = collection(firestore, ratingCollectionName)
                 .withConverter(ratingsConverter)
 
             await updateDoc(doc(ratingCollection, appointment.id), rating)
