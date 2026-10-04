@@ -1,9 +1,7 @@
 import { StylesheetCollection } from "./StylesheetCollection";
 
 export const layoutStylesCollection = StylesheetCollection.create({
-  list: {
-    
-  },
+  list: { },
 
   listContainer: { },
   listWrapper: { },

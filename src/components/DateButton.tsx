@@ -2,7 +2,7 @@ import { Pressable, Text } from "react-native";
 
 import { CalendarDate } from "@internationalized/date";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 type DateButtonProps = {
     date: CalendarDate;

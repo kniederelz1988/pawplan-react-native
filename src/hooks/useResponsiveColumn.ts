@@ -1,13 +1,12 @@
-import { useMemo } from "react";
-import { LayoutSize, LayoutType, useResponsiveLayout } from "./useResponsiveLayout";
+import { LayoutSize, LayoutType, useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 export function useResponsiveColumnBasedOnSize(defaultCount: number, counts?: Partial<Record<LayoutSize, number>>) {
     const { size } = useResponsiveLayout()
 
-    return useMemo(() => counts?.[size] ?? defaultCount, [size])
+    return counts?.[size] ?? defaultCount
 }
 export function useResponsiveColumnBasedOnType(defaultCount: number, counts?: Partial<Record<LayoutType, number>>) {
     const { type } = useResponsiveLayout()
 
-    return useMemo(() => counts?.[type] ?? defaultCount, [type])
+    return counts?.[type] ?? defaultCount
 }

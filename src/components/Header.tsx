@@ -1,6 +1,6 @@
 import { Text, TextProps } from "react-native";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 function BaseHeader(props: TextProps) {
     return (

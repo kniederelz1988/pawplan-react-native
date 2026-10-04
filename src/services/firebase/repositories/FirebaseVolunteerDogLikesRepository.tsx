@@ -1,11 +1,11 @@
-import { firebaseDatabase } from "@firebase/FirebaseConfig"
+import { firestore } from "@firebase/FirebaseConfig"
 import { addDoc, collection, deleteDoc, doc, FirestoreDataConverter, getDocs, onSnapshot, query, QueryDocumentSnapshot, where } from "firebase/firestore";
 
-import { Dog } from "@/shared/data/Dog";
-import { Volunteer } from "@/shared/data/Volunteer";
+import { Dog } from "@/domain/Dog";
+import { Volunteer } from "@/domain/Volunteer";
+import { VolunteerDogLike } from "@/domain/VolunteerDogLike";
 
-import { VolunteerDogLike } from "@/shared/data/VolunteerDogLike";
-import { FirebaseVolunteerLikeDTO } from "../models/FirebaseVolunteerDogLikeDTO";
+import { FirebaseVolunteerLikeDTO } from "@/services/firebase/models/FirebaseVolunteerDogLikeDTO";
 
 import VolunteerDogLikeRepository, { VolunteerDogLikesRepositoryListener } from "@/shared/repositories/VolunteerDogLikeRepository";
 
@@ -33,7 +33,7 @@ export default function FirebaseVolunteerDogLikesRepository(): VolunteerDogLikeR
 
     function subscribeForVolunteerLikes(volunteerId: string, listener: VolunteerDogLikesRepositoryListener) {
         const q = query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where("volunteerId", "==", volunteerId),
         )
             .withConverter(modelConverter)
@@ -42,7 +42,7 @@ export default function FirebaseVolunteerDogLikesRepository(): VolunteerDogLikeR
     }
     function subscribeForDogLikes(dogId: string, listener: VolunteerDogLikesRepositoryListener) {
         const q = query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where("dogId", "==", dogId),
         )
             .withConverter(modelConverter)
@@ -55,7 +55,7 @@ export default function FirebaseVolunteerDogLikesRepository(): VolunteerDogLikeR
             return
 
         try {
-            await addDoc(collection(firebaseDatabase, collectionName), {
+            await addDoc(collection(firestore, collectionName), {
                 volunteerId: volunteer.id,
                 dogId: dog.id
             })
@@ -73,14 +73,14 @@ export default function FirebaseVolunteerDogLikesRepository(): VolunteerDogLikeR
 
         try {
             const q = query(
-                collection(firebaseDatabase, collectionName),
+                collection(firestore, collectionName),
                 where("volunteerId", "==", volunteer.id),
                 where("dogId", "==", dog.id)
             )
 
             const snap = await getDocs(q)
             if (!snap.empty) {
-                const deletePromises = snap.docs.map((t) => deleteDoc(doc(firebaseDatabase, collectionName, t.id)))
+                const deletePromises = snap.docs.map((t) => deleteDoc(doc(firestore, collectionName, t.id)))
                 await Promise.all(deletePromises)
             }
         } catch (error) {

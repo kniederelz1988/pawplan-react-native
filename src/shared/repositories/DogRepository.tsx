@@ -1,4 +1,4 @@
-import { Dog } from "@/shared/data/Dog";
+import { Dog } from "@/domain/Dog";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
 

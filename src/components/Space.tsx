@@ -1,6 +1,6 @@
 import { StyleProp, View, ViewStyle } from "react-native";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 type Props = {
     style?: StyleProp<ViewStyle>

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { useResponsiveLayout } from "./useResponsiveLayout";
+import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
-import { globalStyleCollection } from "../GlobalStyles";
+import { globalStyleCollection } from "@/styles/GlobalStyles";
 
 import { StylesheetCollection } from "@/styles/StylesheetCollection";
 import { dialogStyleCollection } from "@/styles/DialogStyles";

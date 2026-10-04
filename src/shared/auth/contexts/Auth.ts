@@ -1,4 +1,4 @@
-import { AuthUser } from "@/shared/data/AuthUser"
+import { AuthUser } from "@/domain/AuthUser"
 
 export interface Auth {
     isLoggedIn: boolean

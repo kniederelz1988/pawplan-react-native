@@ -1,15 +1,21 @@
-import { Appointment, AppointmentRating, AppointmentStatus } from "@/shared/data/Appointment";
-import { AppointmentStatusEnum } from "@/shared/data/enums/AppointmentStatusEnum";
-import AppointmentRepository, { AppointmentRatingsListener, AppointmentStatesListener, AppointmentsListener } from "@/shared/repositories/AppointmentRepository";
-import { RepositoryDateCompareEnum } from "@/shared/repositories/enums/RepositoryDate";
-import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
-import { Volunteer } from "@/shared/data/Volunteer";
-import { Dog } from "@/shared/data/Dog";
-import { useEffect } from "react";
-import { now } from "@/shared/data/utils/TimeHelpers";
-import { parseAbsoluteToLocal, toCalendarDateTime } from "@internationalized/date";
+import { useEffect } from "react"
 
-type AppointmentUnsubscribe = () => void;
+import { Volunteer } from "@/domain/Volunteer"
+
+import { Dog } from "@/domain/Dog"
+
+import { Appointment, AppointmentRating, AppointmentStatus } from "@/domain/Appointment"
+import { AppointmentStatusEnum } from "@/domain/enums/AppointmentStatusEnum"
+import AppointmentRepository, { AppointmentRatingsListener, AppointmentStatesListener, AppointmentsListener } from "@/shared/repositories/AppointmentRepository"
+
+import { now } from "@/domain/utils/TimeHelpers"
+
+import { RepositoryDateCompareEnum } from "@/shared/repositories/enums/RepositoryDate"
+import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback"
+
+import { parseAbsoluteToLocal, toCalendarDateTime } from "@internationalized/date"
+
+type AppointmentUnsubscribe = () => void
 type AppointmentSeed = [
     string,
     string,
@@ -18,7 +24,7 @@ type AppointmentSeed = [
     AppointmentStatus["status"],
     number?,
     string?,
-];
+]
 
 export default function MockAppointmentRepository(): AppointmentRepository {
 
@@ -28,7 +34,7 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         "Great energy throughout the visit.",
         "Calm, happy, and a lovely companion.",
         "Would happily spend time together again.",
-    ];
+    ]
 
     const seedRows: AppointmentSeed[] = [
         ["appointment-001", "dog-002", "volunteer-001", "2025-01-17T10:00:00.000Z", "completed", 1],
@@ -58,14 +64,13 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         ["appointment-026", "dog-001", "volunteer-002", "2026-10-03T10:00:00.000Z", "confirmed"],
         ["appointment-027", "dog-005", "volunteer-001", "2026-10-07T14:00:00.000Z", "pending"],
         ["appointment-028", "dog-010", "volunteer-002", "2026-10-11T09:30:00.000Z", "pending"],
-    ];
+    ]
 
-    const subscribers = new Set<() => void>();
+    const subscribers = new Set<() => void>()
 
-
-    const appointments = new Map<string, Appointment>();
-    const statuses = new Map<string, AppointmentStatus>();
-    const ratings = new Map<string, AppointmentRating>();
+    const appointments = new Map<string, Appointment>()
+    const statuses = new Map<string, AppointmentStatus>()
+    const ratings = new Map<string, AppointmentRating>()
 
     useEffect(() => {
         appointments.clear()
@@ -73,7 +78,7 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         ratings.clear()
 
         for (const [id, dogId, volunteerId, dateString, status, rating, comment] of seedRows) {
-            const date = toCalendarDateTime(parseAbsoluteToLocal(dateString));
+            const date = toCalendarDateTime(parseAbsoluteToLocal(dateString))
             const appointment: Appointment = {
                 id,
                 dogId,
@@ -81,8 +86,8 @@ export default function MockAppointmentRepository(): AppointmentRepository {
                 createdAt: now(),
                 date,
                 type: "walk",
-            };
-            appointments.set(id, appointment);
+            }
+            appointments.set(id, appointment)
             statuses.set(id, {
                 appointmentId: id,
                 dogId,
@@ -90,7 +95,7 @@ export default function MockAppointmentRepository(): AppointmentRepository {
                 status,
                 updateAt: date,
                 updatedBy: volunteerId,
-            });
+            })
             if (rating !== undefined) {
                 ratings.set(id, {
                     appointmentId: id,
@@ -99,35 +104,35 @@ export default function MockAppointmentRepository(): AppointmentRepository {
                     updateAt: date,
                     rating,
                     comment: comment ?? ratingComments[rating - 1],
-                });
+                })
             }
-        }  
-    }, [])
+        }
+    })
 
     function getNextAppointmentId(): string {
-        let number = 1;
-        let id = `appointment-${String(number).padStart(3, "0")}`;
+        let number = 1
+        let id = `appointment-${String(number).padStart(3, "0")}`
         while (appointments.has(id)) {
-            number++;
-            id = `appointment-${String(number).padStart(3, "0")}`;
+            number++
+            id = `appointment-${String(number).padStart(3, "0")}`
         }
-        return id;
+        return id
     }
 
     function subscribe(listener: () => void): AppointmentUnsubscribe {
-        subscribers.add(listener);
-        listener();
-        return () => subscribers.delete(listener);
+        subscribers.add(listener)
+        listener()
+        return () => subscribers.delete(listener)
     }
 
     function notifySubscribers(): void {
-        subscribers.forEach((listener) => listener());
+        subscribers.forEach((listener) => listener())
     }
 
     function mapAppointments(items: Appointment[]): Map<string, Appointment> {
         return new Map(items.flatMap((appointment) =>
             appointment.id ? [[appointment.id, appointment] as const] : []
-        ));
+        ))
     }
 
     function pageAppointments(
@@ -140,19 +145,19 @@ export default function MockAppointmentRepository(): AppointmentRepository {
             direction === "asc"
                 ? a.date.compare(b.date)
                 : b.date.compare(a.date)
-        );
+        )
         const cursorIndex = queryCursor?.id
             ? sorted.findIndex((appointment) => appointment.id === queryCursor.id)
-            : -1;
+            : -1
         const remaining = cursorIndex >= 0
             ? sorted.slice(cursorIndex + 1)
             : queryCursor
                 ? sorted.filter((appointment) => direction === "asc"
                     ? appointment.date > queryCursor.date
                     : appointment.date < queryCursor.date)
-                : sorted;
+                : sorted
 
-        return remaining.slice(0, Math.max(0, queryLimit));
+        return remaining.slice(0, Math.max(0, queryLimit))
     }
 
     function subscribeForVolunteerAppointments(
@@ -161,14 +166,14 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         queryLimit: number,
         listener: AppointmentsListener,
     ): AppointmentUnsubscribe | undefined {
-        if (!volunteer.id) return undefined;
+        if (!volunteer.id) return undefined
 
         return subscribe(() => {
             const matching = [...appointments.values()].filter(
                 (appointment) => appointment.volunteerId === volunteer.id,
-            );
-            listener(mapAppointments(pageAppointments(matching, queryCursor, queryLimit, "asc")));
-        });
+            )
+            listener(mapAppointments(pageAppointments(matching, queryCursor, queryLimit, "asc")))
+        })
     }
 
     function subscribeForAllAppointments(
@@ -180,10 +185,10 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         return subscribe(() => {
             const matching = [...appointments.values()].filter((appointment) =>
                 date === "past" ? appointment.date < now() : appointment.date >= now()
-            );
-            const direction = date === "past" ? "desc" : "asc";
-            listener(mapAppointments(pageAppointments(matching, queryCursor, queryLimit, direction)));
-        });
+            )
+            const direction = date === "past" ? "desc" : "asc"
+            listener(mapAppointments(pageAppointments(matching, queryCursor, queryLimit, direction)))
+        })
     }
 
     function subscribeForAllDogAppointments(
@@ -192,7 +197,7 @@ export default function MockAppointmentRepository(): AppointmentRepository {
     ): AppointmentUnsubscribe {
         return subscribe(() => listener(mapAppointments([...appointments.values()].filter(
             (appointment) => appointment.dogId === dogId,
-        ))));
+        ))))
     }
 
     function subscribeForAppointments(
@@ -200,9 +205,9 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         listener: AppointmentsListener,
     ): AppointmentUnsubscribe {
         return subscribe(() => listener(new Map(appointmentIds.flatMap((id) => {
-            const appointment = appointments.get(id);
-            return appointment ? [[id, appointment] as const] : [];
-        }))));
+            const appointment = appointments.get(id)
+            return appointment ? [[id, appointment] as const] : []
+        }))))
     }
 
     function subscribeForAppointmentStatus(
@@ -212,7 +217,7 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         queryLimit: number,
         listener: AppointmentStatesListener,
     ): AppointmentUnsubscribe | undefined {
-        if (volunteer && !volunteer.id) return undefined;
+        if (volunteer && !volunteer.id) return undefined
 
         return subscribe(() => {
             const matching = [...statuses.entries()]
@@ -221,9 +226,9 @@ export default function MockAppointmentRepository(): AppointmentRepository {
                 .sort(([, a], [, b]) => a.updateAt.compare(b.updateAt))
             const afterCursor = queryCursor
                 ? matching.filter(([, state]) => state.updateAt > queryCursor.updateAt)
-                : matching;
-            listener(new Map<string, AppointmentStatus>(afterCursor.slice(0, Math.max(0, queryLimit))));
-        });
+                : matching
+            listener(new Map<string, AppointmentStatus>(afterCursor.slice(0, Math.max(0, queryLimit))))
+        })
     }
 
     function subscribeForAppointmentStates(
@@ -231,9 +236,9 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         listener: AppointmentStatesListener,
     ): AppointmentUnsubscribe {
         return subscribe(() => listener(new Map(appointmentIds.flatMap((id) => {
-            const state = statuses.get(id);
-            return state ? [[id, state] as const] : [];
-        }))));
+            const state = statuses.get(id)
+            return state ? [[id, state] as const] : []
+        }))))
     }
 
     function subscribeForAppointmentRatings(
@@ -241,9 +246,9 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         listener: AppointmentRatingsListener,
     ): AppointmentUnsubscribe {
         return subscribe(() => listener(new Map(appointmentIds.flatMap((id) => {
-            const rating = ratings.get(id);
-            return rating ? [[id, rating] as const] : [];
-        }))));
+            const rating = ratings.get(id)
+            return rating ? [[id, rating] as const] : []
+        }))))
     }
 
     function subscribeForDogAppointmentRatings(
@@ -252,38 +257,36 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         queryLimit: number,
         listener: AppointmentRatingsListener,
     ): AppointmentUnsubscribe | undefined {
-        if (!dog.id) return undefined;
+        if (!dog.id) return undefined
 
         return subscribe(() => {
             const matching = [...ratings.entries()]
                 .filter(([, rating]) => rating.dogId === dog.id)
-                .sort(([, a], [, b]) => b.updateAt.compare(a.updateAt));
+                .sort(([, a], [, b]) => b.updateAt.compare(a.updateAt))
             const cursorIndex = queryCursor
                 ? matching.findIndex(([, rating]) =>
                     rating.appointmentId === queryCursor.appointmentId
                 )
-                : -1;
+                : -1
             const remaining = cursorIndex >= 0
                 ? matching.slice(cursorIndex + 1)
                 : queryCursor
                     ? matching.filter(([, rating]) => rating.updateAt < queryCursor.updateAt)
-                    : matching;
-            listener(new Map<string, AppointmentRating>(remaining.slice(0, Math.max(0, queryLimit))));
-        });
+                    : matching
+            listener(new Map<string, AppointmentRating>(remaining.slice(0, Math.max(0, queryLimit))))
+        })
     }
 
     async function createAppointment(
-        appointment: Appointment,
-        operationCallback: RepositoryOperationCallback,
-    ): Promise<void> {
-        const id = appointment.id ?? getNextAppointmentId();
+        appointment: Appointment
+    ): Promise<string> {
+        const id = appointment.id ?? getNextAppointmentId()
         if (appointments.has(id)) {
-            operationCallback("error", "Appointment already exists.");
-            return;
+            throw new Error("Appointment already exists.")
         }
 
-        const created = { ...appointment, id };
-        appointments.set(id, created);
+        const created = { ...appointment, id }
+        appointments.set(id, created)
         statuses.set(id, {
             appointmentId: id,
             dogId: created.dogId,
@@ -291,9 +294,10 @@ export default function MockAppointmentRepository(): AppointmentRepository {
             status: "pending",
             updateAt: now(),
             updatedBy: created.volunteerId,
-        });
-        notifySubscribers();
-        operationCallback("success", id);
+        })
+
+        notifySubscribers()
+        return id
     }
 
     async function updateAppointment(
@@ -301,13 +305,13 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback,
     ): Promise<void> {
         if (!appointment.id || !appointments.has(appointment.id)) {
-            operationCallback("error", "Appointment not found.");
-            return;
+            operationCallback("error", "Appointment not found.")
+            return
         }
 
-        appointments.set(appointment.id, appointment);
-        notifySubscribers();
-        operationCallback("success");
+        appointments.set(appointment.id, appointment)
+        notifySubscribers()
+        operationCallback("success")
     }
 
     async function deleteAppointment(
@@ -315,15 +319,15 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback,
     ): Promise<void> {
         if (!appointment.id || !appointments.has(appointment.id)) {
-            operationCallback("error", "Appointment not found.");
-            return;
+            operationCallback("error", "Appointment not found.")
+            return
         }
 
-        appointments.delete(appointment.id);
-        statuses.delete(appointment.id);
-        ratings.delete(appointment.id);
-        notifySubscribers();
-        operationCallback("success");
+        appointments.delete(appointment.id)
+        statuses.delete(appointment.id)
+        ratings.delete(appointment.id)
+        notifySubscribers()
+        operationCallback("success")
     }
 
     async function updateAppointmentStatus(
@@ -332,13 +336,13 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback,
     ): Promise<void> {
         if (!appointment.id || !appointments.has(appointment.id)) {
-            operationCallback("error", "Appointment not found.");
-            return;
+            operationCallback("error", "Appointment not found.")
+            return
         }
 
-        statuses.set(appointment.id, appointmentState);
-        notifySubscribers();
-        operationCallback("success");
+        statuses.set(appointment.id, appointmentState)
+        notifySubscribers()
+        operationCallback("success")
     }
 
     async function createAppointmentRating(
@@ -347,17 +351,17 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback,
     ): Promise<void> {
         if (!appointment.id || !appointments.has(appointment.id)) {
-            operationCallback("error", "Appointment not found.");
-            return;
+            operationCallback("error", "Appointment not found.")
+            return
         }
         if (ratings.has(appointment.id)) {
-            operationCallback("error", "Appointment rating already exists.");
-            return;
+            operationCallback("error", "Appointment rating already exists.")
+            return
         }
 
-        ratings.set(appointment.id, rating);
-        notifySubscribers();
-        operationCallback("success");
+        ratings.set(appointment.id, rating)
+        notifySubscribers()
+        operationCallback("success")
     }
 
     async function updateAppointmentRating(
@@ -366,13 +370,13 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback,
     ): Promise<void> {
         if (!appointment.id || !ratings.has(appointment.id)) {
-            operationCallback("error", "Appointment rating not found.");
-            return;
+            operationCallback("error", "Appointment rating not found.")
+            return
         }
 
-        ratings.set(appointment.id, rating);
-        notifySubscribers();
-        operationCallback("success");
+        ratings.set(appointment.id, rating)
+        notifySubscribers()
+        operationCallback("success")
     }
 
     return {
@@ -390,5 +394,5 @@ export default function MockAppointmentRepository(): AppointmentRepository {
         updateAppointmentStatus,
         createAppointmentRating,
         updateAppointmentRating,
-    };
+    }
 }

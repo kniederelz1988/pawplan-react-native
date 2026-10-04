@@ -1,7 +1,10 @@
-import VolunteerRepository from "@/shared/repositories/VolunteerRepository";
-import { Volunteer } from "@/shared/data/Volunteer";
-import { VolunteerRole } from "@/shared/data/VolunteerRole";
-import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
+import { Volunteer } from "@/domain/Volunteer"
+import { VolunteerRole } from "@/domain/VolunteerRole"
+import { dateToDateValue } from "@/domain/utils/TimeHelpers"
+
+import VolunteerRepository from "@/shared/repositories/VolunteerRepository"
+
+import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback"
 
 export default function MockVolunteerRepository(): VolunteerRepository {
 	const volunteers: Volunteer[] = [
@@ -9,15 +12,15 @@ export default function MockVolunteerRepository(): VolunteerRepository {
 			id: "volunteer-001",
 			userId: "user-001",
 			name: "Alex Morgan",
-			birthday: new Date("1992-04-15"),
-			volunteerSince: new Date("2022-09-01"),
+			birthday: dateToDateValue(new Date("1992-04-15")),
+			volunteerSince: dateToDateValue(new Date("2022-09-01")),
 		},
 		{
 			id: "volunteer-002",
 			userId: "user-002",
 			name: "Jordan Lee",
-			birthday: new Date("1988-11-23"),
-			volunteerSince: new Date("2023-03-12"),
+			birthday: dateToDateValue(new Date("1988-11-23")),
+			volunteerSince: dateToDateValue(new Date("2023-03-12")),
 		},
 	];
 	const roles = new Map<string, VolunteerRole>([
@@ -143,8 +146,8 @@ export default function MockVolunteerRepository(): VolunteerRepository {
 			{
 				userId: userID,
 				name,
-				birthday: new Date(),
-				volunteerSince: new Date(),
+				birthday: dateToDateValue(new Date()),
+				volunteerSince: dateToDateValue(new Date()),
 			},
 			operationCallback,
 		);

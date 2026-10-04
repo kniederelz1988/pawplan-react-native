@@ -1,16 +1,14 @@
-import { useState } from "react"
-import { Modal, Pressable, PressableProps, StyleSheet, Text, View } from "react-native"
+import { useState } from "react";
+import { Pressable, Modal, View, Text, PressableProps } from "react-native";
 
-import { useRouter } from "expo-router"
-
-import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider"
-
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useNavigation from "@/hooks/useNavigation";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
+import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
 
 function MenuItem({ onPress, children }: PressableProps) {
-    const { menuStyles } = useResponsiveStyles()
+    const { menuStyles } = useResponsiveStyles();
 
-    const [hoverState, setHoverState] = useState(false)
+    const [hoverState, setHoverState] = useState(false);
 
     return <Pressable accessibilityRole="button"
         style={[menuStyles.menuItem, hoverState && menuStyles.menuItemHover]}
@@ -20,66 +18,49 @@ function MenuItem({ onPress, children }: PressableProps) {
         onPress={onPress}
     >
         {children}
-    </Pressable>
+    </Pressable>;
 }
+type MenuProps = {
+    state: boolean; onClose: () => void;
+};
+export function Menu({ state, onClose }: MenuProps) {
+    const { dialogStyles, menuStyles } = useResponsiveStyles();
 
-export default function Menu() {
-    const { menuStyles, dialogStyles} = useResponsiveStyles()
+    const { isLoggedIn } = useAuthContext();
+    const navigation = useNavigation();
 
-    const [state, setState] = useState(false)
-
-    const { user, signIn, signOut } = useAuthContext()
-    const router = useRouter()
-
-    return <>
-        <Pressable accessibilityRole="button" accessibilityLabel="Open menu"
-            style={menuStyles.menuButton}
-            onPress={() => setState(true)}
-        >
-            {
-                state ? <Text>X</Text> : <Text>⋮</Text>
-            }
-        </Pressable>
-
+    return (
         <Modal visible={state} transparent animationType="fade"
-            onRequestClose={() => { setState(false) }}
-        >
-            <Pressable style={dialogStyles.dialogBackdrop} onPress={() => setState(false)}>
-                <View style={menuStyles.menu}>
+            onRequestClose={onClose}>
 
-                    <MenuItem onPress={() => {
-                        setState(false)
-                        router.push("/test")
-                    }}>
+            <Pressable style={[dialogStyles.dialogBackdrop]} onPress={onClose}>
+                <View style={[menuStyles.menuDialogue,menuStyles.menuContainer]}>
+                    <MenuItem onPress={onClose}>
                         <Text style={{ flex: 1 }}>Profile</Text>
                     </MenuItem>
 
-                    {
-                        user ?
-                            <MenuItem
-                                onPress={() => {
-                                    signOut()
+                    {isLoggedIn ||
+                        <MenuItem
+                            onPress={() => {
+                                onClose();
+                                navigation.push("/auth/login", { flag: "keep" });
+                            }}
+                        >
+                            <Text style={{ flex: 1 }}>Sign In</Text>
+                        </MenuItem>}
 
-                                    setState(false)
-                                }}
-                            >
-                                <Text style={{ flex: 1 }}>Sign Out</Text>
-                            </MenuItem>
-                            :
-                            <MenuItem
-                                onPress={async () => {
-                                    console.log("Sign In")
-                                    await signIn("alexmorgan@pawplan.com", "morganalex")
-
-                                    setState(false)
-                                }}
-                                style={menuStyles.menuItem}
-                            >
-                                <Text style={{}}>Sign In</Text>
-                            </MenuItem>
-                    }
+                    {isLoggedIn &&
+                        <MenuItem
+                            onPress={async () => {
+                                onClose();
+                                navigation.push("/auth/logout", { flag: "clear" });
+                            }}
+                            style={menuStyles.menuItem}
+                        >
+                            <Text style={{}}>Sign Out</Text>
+                        </MenuItem>}
                 </View>
             </Pressable>
         </Modal>
-    </>
+    );
 }

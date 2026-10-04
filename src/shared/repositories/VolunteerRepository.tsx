@@ -1,6 +1,6 @@
 
-import { Volunteer } from "@/shared/data/Volunteer";
-import { VolunteerRole } from "@/shared/data/VolunteerRole";
+import { Volunteer } from "@/domain/Volunteer";
+import { VolunteerRole } from "@/domain/VolunteerRole";
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
 
 export type VolunteerRepositoryListener = (result: Volunteer[]) => void

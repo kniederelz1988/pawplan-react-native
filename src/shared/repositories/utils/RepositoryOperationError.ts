@@ -1,5 +1,7 @@
 // import { getFirestoreErrorMessage } from "@fb/FirebaseErrorHelpers"
 
+import { getFirestoreErrorMessage } from "@/services/firebase/FirebaseErrorHelpers"
+
 export type RepositoryOperationErrorEnum = "none" | "undefinedData"
 
 export function getRepositoryOperationUndefinedDataMessage() {
@@ -18,6 +20,5 @@ export function getRepositoryOperationErrorMessage(
     }
 
     // TODO: ENABLE LAST LINE
-    return ""
-    // return getFirestoreErrorMessage(error)
+    return getFirestoreErrorMessage(error)
 }

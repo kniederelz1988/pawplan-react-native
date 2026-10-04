@@ -1,12 +1,12 @@
-import { createContext, PropsWithChildren, useContext, useMemo, useState } from "react"
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react"
 
-import { Auth as Auth } from "./Auth"
-import { AuthUser } from "@/shared/data/AuthUser"
+import { Auth } from "@/shared/auth/contexts/Auth"
+import { AuthUser } from "@/domain/AuthUser"
 import { useAppDependencies } from "@/shared/dependencies/hooks/useAppDependencies"
 
-const AuthContext = createContext<Auth>({ isLoggedIn: false, user: null, signIn: (_1, _2) => {},  signOut: () => {} })
+const AuthContext = createContext<Auth>({ isLoggedIn: false, user: null, signIn: (_1, _2) => { }, signOut: () => { } })
 
-interface Props extends PropsWithChildren {}
+type Props = { } & PropsWithChildren
 
 export const useAuthContext = () => useContext(AuthContext)
 
@@ -15,38 +15,39 @@ export function AuthContextProvider({ children }: Props) {
 
     const { authRepository } = useAppDependencies()
 
-    const auth = useMemo<Auth>(() => {
+    const signIn = useCallback(async (email: string, password: string) => {
+        try {
+            const user = await authRepository.signIn(email, password)
+            setUser(user)
+        }
+        catch (e: unknown) {
+            console.error(e)
+        }
+    }, [authRepository])
+    const signOut = useCallback(async () => {
+        try {
+            await authRepository.signOut()
+            setUser(null)
+        } catch (e: unknown) {
+            console.error(e)
+        }
+    }, [authRepository])
+
+    useEffect(() => {
+        return authRepository.subscribeToUser((_state, user) => {
+            setUser(user);
+        });
+    }, [authRepository]);
+
+    const auth: Auth = useMemo(() => {
         return {
             isLoggedIn: !!user,
             user: user,
 
-            signIn: async (email: string, password: string) => {
-                console.log(`Login with: ${email} and ${password}`)
-
-                try {
-                    const user = await authRepository.signIn(email, password)
-                    setUser(user)
-
-                    console.log(`User logged in.. [${user?.userId}, ${user?.userEmail}]`)
-                }
-                catch (e: unknown) {
-                    console.error(e)
-                }
-            },
-            signOut: async () => {
-                console.log(`LogOut`)
-
-                try {
-                    await authRepository.signOut()
-                    setUser(null)
-
-                    console.log(`User logged out..`)
-                } catch (e: unknown) {
-                    console.error(e)
-                }
-            }
+            signIn: signIn,
+            signOut: signOut
         }
-    }, [authRepository, user])
+    }, [user, signIn, signOut])
 
     return (
         <AuthContext.Provider value={auth}>

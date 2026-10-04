@@ -1,14 +1,15 @@
 import { Text, View } from "react-native"
 import { Star } from "lucide-react-native"
 
-import { AppointmentRating } from "@/shared/data/Appointment"
+import { AppointmentRating } from "@/domain/Appointment"
+
 import { useVolunteerById } from "@/shared/repositories/hooks/VolunteerHooks"
 
 import { Header2, SubHeader2 } from "@/components/Header"
 import Space from "@/components/Space"
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
 import colors from "@/styles/Colors"
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 declare type Props = {
     data: AppointmentRating

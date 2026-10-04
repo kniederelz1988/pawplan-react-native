@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 declare type Props = {
     viewStyle?: StyleProp<ViewStyle>,

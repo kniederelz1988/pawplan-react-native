@@ -1,4 +1,4 @@
-import { Appointment, AppointmentRating, AppointmentStatus } from "./Appointment"
+import { Appointment, AppointmentRating, AppointmentStatus } from "@/domain/Appointment"
 
 export declare type AppointmentMap = {
     data: Appointment,

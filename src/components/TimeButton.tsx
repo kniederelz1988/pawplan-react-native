@@ -1,7 +1,7 @@
 import { CalendarDateTime } from "@internationalized/date";
 import { Pressable, Text } from "react-native";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 type TimeButtonProps = {
     time: CalendarDateTime;

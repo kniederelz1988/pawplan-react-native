@@ -1,7 +1,14 @@
 import { StylesheetCollection } from "./StylesheetCollection";
 
 export const menuStylesCollection = StylesheetCollection.create({
-  menu: {
+  menuDialogue: {
+    marginLeft: "auto",
+    marginTop: 64,
+    marginRight: 16,
+    marginBottom: "auto"
+  },
+
+  menuContainer: {
     minWidth: 180,
     backgroundColor: "white",
     borderRadius: 8,

@@ -1,6 +1,6 @@
 import { Pressable, Text } from "react-native"
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 export default function LoadingDialogue() {
     const { dialogStyles } = useResponsiveStyles()

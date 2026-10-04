@@ -2,8 +2,8 @@ import { ReactElement } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Mars as MarsIcon, Venus as VenusIcon } from "lucide-react-native";
 
-import { DogGenderEnum } from "@/shared/data/enums/DogGenderEnum";
-import { getGenderTitle } from "@/shared/data/utils/DogHelpers";
+import { DogGenderEnum } from "@/domain/enums/DogGenderEnum";
+import { getGenderTitle } from "@/domain/utils/DogHelpers";
 
 type Props = {
     gender: DogGenderEnum;

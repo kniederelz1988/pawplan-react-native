@@ -1,9 +1,9 @@
 import { Button, ScrollView, Text } from "react-native";
 import { router } from "expo-router";
 
-import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
 
 export default function Test() {
     const { globalStyles } = useResponsiveStyles()

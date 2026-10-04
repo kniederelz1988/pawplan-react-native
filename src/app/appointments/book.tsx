@@ -1,32 +1,29 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Pressable } from "react-native";
 
-import useRouterNavigation from "@/features/navigation/hooks/useRouterNavigation";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
-import BookAppointmentDialogue from "@/features/appointments/components/AppointmentDialogue";
-import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks";
-
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import BookAppointmentDialogue from "@/features/appointments/components/BookAppointmentDialogue";
+import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
+import useNavigationIntent from "@/hooks/useNavigationIntent";
 
 export default function BookAppointmentsModal() {
     const { dialogStyles } = useResponsiveStyles()
     
-    const navigation = useRouterNavigation()
+    const { parameters, redirect, toSource } = useNavigationIntent<{ dogId: string }>()
 
-    const { volunteer, volunteerLoading } = useVolunteer()
+    const { isLoggedIn } = useAuthContext()
 
     useEffect(() => {
-        if (volunteerLoading || volunteer?.id)
+        if (isLoggedIn)
             return
 
-        navigation.replace("/auth/login", { flag: "keep" }, navigation.routeParams)
-    }, [navigation, volunteerLoading, volunteer?.id])
-
-    const onCloseCallback = useCallback(() => { navigation.toSource("dismissTo", "clear", navigation.routeParams) }, [])
+        redirect("/auth/login")
+    }, [isLoggedIn, redirect])
 
     return (
-        <Pressable style={dialogStyles.dialogBackdrop} onPress={onCloseCallback}>
-            <BookAppointmentDialogue dogId={navigation.routeParams.dogId as string} onClose={onCloseCallback} />
+        <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>
+            <BookAppointmentDialogue dogId={parameters.dogId} onClose={toSource} />
         </Pressable>
     )
 }

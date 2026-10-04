@@ -1,6 +1,6 @@
-import { Dog } from "@/shared/data/Dog";
-import { Volunteer } from "@/shared/data/Volunteer";
-import { VolunteerDogLike } from "@/shared/data/VolunteerDogLike";
+import { Dog } from "@/domain/Dog";
+import { Volunteer } from "@/domain/Volunteer";
+import { VolunteerDogLike } from "@/domain/VolunteerDogLike";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
 

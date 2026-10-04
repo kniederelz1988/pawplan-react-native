@@ -1,26 +1,27 @@
-import { firebaseDatabase } from "@firebase/FirebaseConfig"
+import { firestore } from "@firebase/FirebaseConfig"
 import { addDoc, collection, deleteDoc, doc, DocumentData, documentId, FirestoreDataConverter, limit, onSnapshot, orderBy, Query, query, QueryDocumentSnapshot, setDoc, startAfter, updateDoc, where } from "firebase/firestore";
 
-import { Volunteer } from "@/shared/data/Volunteer";
-import { VolunteerRole } from "@/shared/data/VolunteerRole";
+import { Volunteer } from "@/domain/Volunteer";
+import { VolunteerRole } from "@/domain/VolunteerRole";
+import { VolunteerRoleEnum } from "@/domain/enums/VolunteerRoleEnum";
+import { today } from "@/domain/utils/TimeHelpers";
 
-import { FirebaseVolunteerDTO } from "../models/FirebaseVolunteerDTO";
-import { FirebaseVolunteerRoleDTO } from "../models/FirebaseVolunteerRoleDTO";
+import { FirebaseVolunteerDTO } from "@/services/firebase/models/FirebaseVolunteerDTO";
+import { FirebaseVolunteerRoleDTO } from "@/services/firebase/models/FirebaseVolunteerRoleDTO";
 
 import VolunteerRepository, { VolunteerRepositoryListener, VolunteerRoleRepositoryListener } from "@/shared/repositories/VolunteerRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
 import { getRepositoryOperationErrorMessage, getRepositoryOperationUndefinedDataMessage } from "@/shared/repositories/utils/RepositoryOperationError";
-import { dateToTimestamp, timestampToDate } from "../utils/FirebaseExtensions";
-import { VolunteerRoleEnum } from "@/shared/data/enums/VolunteerRoleEnum";
+import { dateValueToTimestamp, timestampToDateValue } from "@/services/firebase/utils/FirebaseExtensions";
 
 const volunteerConverter: FirestoreDataConverter<Volunteer, FirebaseVolunteerDTO> = {
     toFirestore: (data: Volunteer) => {
         return {
             id: data.id,
             userId: data.userId,
-            birthday: dateToTimestamp(data.birthday),
-            volunteerSince: dateToTimestamp(data.volunteerSince),
+            birthday: dateValueToTimestamp(data.birthday),
+            volunteerSince: dateValueToTimestamp(data.volunteerSince),
             name: data.name
         }
     },
@@ -31,8 +32,8 @@ const volunteerConverter: FirestoreDataConverter<Volunteer, FirebaseVolunteerDTO
         return {
             id: d.id,
             userId: d.userId,
-            birthday: timestampToDate(d.birthday),
-            volunteerSince: timestampToDate(d.volunteerSince),
+            birthday: timestampToDateValue(d.birthday),
+            volunteerSince: timestampToDateValue(d.volunteerSince),
             name: d.name
         }
     }
@@ -57,7 +58,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
 
     function subscribeForVolunteerByUserId(userId: string, listener: VolunteerRepositoryListener) {
         const q = query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where("userId", "==", userId),
             limit(1)
         )
@@ -72,7 +73,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
     }
     function subscribeForVolunteer(volunteerId: string, listener: VolunteerRepositoryListener) {
         const q = query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where(documentId(), "==", volunteerId),
             limit(1)
         )
@@ -87,7 +88,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
     }
     function subscribeForVolunteerRole(volunteerId: string, listener: VolunteerRoleRepositoryListener) {
         const q = query(
-            collection(firebaseDatabase, roleCollectionName),
+            collection(firestore, roleCollectionName),
             where(documentId(), "==", volunteerId),
             limit(1)
         )
@@ -106,14 +107,14 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
     {
         if (!queryCursor?.id) {
             return query(
-                collection(firebaseDatabase, collectionName),
+                collection(firestore, collectionName),
                 orderBy("name", "desc"),
                 limit(queryLimit)
             )
         }
 
         return query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             orderBy("name", "desc"),
             startAfter(queryCursor.name),
             limit(queryLimit)
@@ -140,8 +141,8 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
         try {
             const role = { role: "observer" }
 
-            const t = await addDoc(collection(firebaseDatabase, collectionName), volunteer)
-            await setDoc(doc(collection(firebaseDatabase, roleCollectionName), t.id), role)
+            const t = await addDoc(collection(firestore, collectionName), volunteer)
+            await setDoc(doc(collection(firestore, roleCollectionName), t.id), role)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -158,7 +159,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
         }
 
         try {
-            await updateDoc(doc(collection(firebaseDatabase, collectionName), volunteer.id), volunteer)
+            await updateDoc(doc(collection(firestore, collectionName), volunteer.id), volunteer)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -176,7 +177,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
 
         try {
             const t = { role: role }
-            await updateDoc(doc(collection(firebaseDatabase, roleCollectionName), volunteer.id), t)
+            await updateDoc(doc(collection(firestore, roleCollectionName), volunteer.id), t)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -194,8 +195,8 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
         }
         
         try {
-            await deleteDoc(doc(collection(firebaseDatabase, collectionName), volunteer.id))
-            await deleteDoc(doc(collection(firebaseDatabase, roleCollectionName), volunteer.id))
+            await deleteDoc(doc(collection(firestore, collectionName), volunteer.id))
+            await deleteDoc(doc(collection(firestore, roleCollectionName), volunteer.id))
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -219,8 +220,8 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
             
             const volunteer = { 
                 userId: userID,
-                birthday: new Date(),
-                volunteerSince: new Date(),
+                birthday: today(),
+                volunteerSince: today(),
                 name: name,
             }
             createVolunteer(volunteer, operationCallback)

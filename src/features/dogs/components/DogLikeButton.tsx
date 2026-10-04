@@ -1,7 +1,7 @@
-import { Pressable, PressableProps, StyleProp, View, ViewStyle } from "react-native";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
 import { Heart } from "lucide-react-native";
 
-import { Dog } from "@/shared/data/Dog";
+import { Dog } from "@/domain/Dog";
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks";
 
 type Props = {

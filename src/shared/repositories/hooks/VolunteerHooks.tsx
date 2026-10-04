@@ -4,10 +4,10 @@ import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider"
 
 import { useAppDependencies } from "@/shared/dependencies/hooks/useAppDependencies"
 
-import { Dog } from "@/shared/data/Dog"
-import { Volunteer } from "@/shared/data/Volunteer"
-import { VolunteerRole } from "@/shared/data/VolunteerRole"
-import { VolunteerRoleEnum } from "@/shared/data/enums/VolunteerRoleEnum"
+import { Dog } from "@/domain/Dog"
+import { Volunteer } from "@/domain/Volunteer"
+import { VolunteerRole } from "@/domain/VolunteerRole"
+import { VolunteerRoleEnum } from "@/domain/enums/VolunteerRoleEnum"
 import { showAddLikeFailedToast, showCreateVolunteerFailedToast, showCreateVolunteerSuccessToast, showDeleteVolunteerFailedToast, showDeleteVolunteerSuccessToast, showRemoveLikeFailedToast, showUpdateVolunteerFailedToast, showUpdateVolunteerSuccessToast } from "@/services/toast/toastEvents"
 
 export function useVolunteerRepository() {
@@ -72,8 +72,6 @@ export function useVolunteer() {
     const { isLoggedIn, user } = useAuthContext()
 
     const [volunteer, setVolunteer] = useState<Volunteer | null>(null)
-    const [volunteerLoading, setVolunteerLoading] = useState(true)
-
     const [likedDogs, setLikedDogs] = useState<string[]>([])
 
     const isFavourite = useCallback((dog: Dog) => {
@@ -108,22 +106,16 @@ export function useVolunteer() {
 
     useEffect(() => {
         if (!isLoggedIn || !user?.userId) {
-            setVolunteer(null)
-            setVolunteerLoading(false)
             return
         }
-
-        setVolunteerLoading(true)
 
         return volunteerRepository.subscribeForVolunteerByUserId(user?.userId, (t) => {
             if (!t.length) {
                 setVolunteer(null)
-                setVolunteerLoading(false)
                 return
             }
 
             setVolunteer(t[0])
-            setVolunteerLoading(false)
         })
     }, [isLoggedIn, user?.userId, volunteerRepository])
 
@@ -136,7 +128,7 @@ export function useVolunteer() {
 
     const likeCounter = useMemo(() => likedDogs.length, [likedDogs])
 
-    return { volunteer, volunteerLoading, isFavourite, toggleFavourite, likeCounter }
+    return { volunteer, isFavourite, toggleFavourite, likeCounter }
 }
 export function useVolunteerRole(volunteer: Volunteer | null) {
     const { volunteerRepository } = useAppDependencies()

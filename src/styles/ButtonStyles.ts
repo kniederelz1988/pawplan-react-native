@@ -2,9 +2,7 @@ import { StylesheetCollection } from "./StylesheetCollection";
 
 export const buttonStylesCollection = StylesheetCollection.create({
   dateButton: {
-    padding: 8,
-
-    large: { padding: 16 },
+    padding: 16,
 
     borderRadius: 8,
     borderColor: "#FFFFFF",

@@ -1,4 +1,5 @@
-import { AuthUser } from "@/shared/data/AuthUser";
+import { AuthUser } from "@/domain/AuthUser";
+
 import AuthRepository, { AuthListener } from "@/shared/repositories/AuthRepository";
 
 export default function MockAuthRepository(): AuthRepository {
@@ -7,6 +8,8 @@ export default function MockAuthRepository(): AuthRepository {
         { id: "user-002", email: "jordanlee@pawplan.com", password: "leejordan" }
     ]
     const userMap = new Map(userData.map((user) => [user.email, user] as const))
+
+    
 
     async function signIn(email: string, password: string): Promise<AuthUser> {
         const userData = userMap.get(email)
@@ -22,11 +25,10 @@ export default function MockAuthRepository(): AuthRepository {
         }
         return authUser
     }
-
     async function signOut(): Promise<void> {}
 
     function subscribeToUser(listener: AuthListener) {
-        listener("success", null)
+        listener("error", null)
         return () => {}
     }
 

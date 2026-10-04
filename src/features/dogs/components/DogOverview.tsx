@@ -1,12 +1,10 @@
 import { useMemo } from "react";
-import { Button, Image, ScrollView, Text, View } from "react-native";
+import { Button, Image, Text, View } from "react-native";
 
-import { Stack } from "expo-router";
+import useNavigation from "@/hooks/useNavigation";
 
-import useRouterNavigation from "@/features/navigation/hooks/useRouterNavigation";
-
-import { Dog } from "@/shared/data/Dog";
-import { getDogAge } from "@/shared/data/utils/DogHelpers";
+import { Dog } from "@/domain/Dog";
+import { getDogAge } from "@/domain/utils/DogHelpers";
 import useDogsCollection from "@/shared/repositories/hooks/DogHooks";
 
 import DogLikeButton from "@/features/dogs/components/DogLikeButton";
@@ -18,15 +16,13 @@ import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks";
 import { Header2, SubHeader2 } from "@/components/Header";
 import Space from "@/components/Space";
 import Divider from "@/components/Divider";
+import { ListView } from "@/components/ListView";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
-import { useResponsiveColumnBasedOnSize } from "@/styles/hooks/useResponsiveColumn";
-import { ListView } from "../../../components/ListView";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
+import { useResponsiveColumnBasedOnSize } from "@/hooks/useResponsiveColumn";
 
 export function EmptyCard() {
-    return (
-        <View style={{ flex: 1 }} />
-    )
+    return <View style={{ flex: 1 }} />
 }
 
 type DogCardProps = {
@@ -34,7 +30,7 @@ type DogCardProps = {
 }
 
 export function DogCard({ dog }: DogCardProps) {
-    const navigation = useRouterNavigation()
+    const navigation = useNavigation()
     const { cardStyles } = useResponsiveStyles()
 
     const { volunteer } = useVolunteer()
@@ -102,7 +98,7 @@ export default function DogOverview() {
 
     const numColumns = useResponsiveColumnBasedOnSize(3, { "compact": 1, "medium": 2 })
 
-    const allElements = useMemo<Array<Dog | null>>(() => {
+    const allElements = useMemo<(Dog | null)[]>(() => {
         const elementCount = Math.ceil(dogs.length / numColumns) * numColumns
         const emptyCount = Math.max(0, elementCount - dogs.length)
 
@@ -111,8 +107,6 @@ export default function DogOverview() {
 
     return (
         <>
-            <Stack.Title>Dogs</Stack.Title>
-
             <View style={[globalStyles.contentContainer]}>
                 <Divider >
                     <Header2 accessibilityRole="header">Dogs</Header2>

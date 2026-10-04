@@ -1,20 +1,43 @@
-import { firebaseDatabase } from "@firebase/FirebaseConfig"
-import { collection, DocumentData, FirestoreDataConverter, onSnapshot, query, QueryDocumentSnapshot, where, documentId, addDoc, doc, updateDoc, setDoc, deleteDoc, limit, orderBy, startAfter, Query, Timestamp } from "firebase/firestore"
+import { firestore } from "@firebase/FirebaseConfig"
+import { collection, DocumentData, FirestoreDataConverter, onSnapshot, query, QueryDocumentSnapshot, where, documentId, addDoc, doc, updateDoc, setDoc, deleteDoc, limit, orderBy, startAfter, Query, Timestamp } from "@react-native-firebase/firestore"
 
 import { FirebaseAppointmentDTO, FirebaseAppointmentRatingDTO, FirebaseAppointmentStatusDTO } from "../models/FirebaseAppointmentDTO";
 
-import { Appointment, AppointmentRating, AppointmentStatus } from "@/shared/data/Appointment";
-import { Volunteer } from "@/shared/data/Volunteer";
-import { Dog } from "@/shared/data/Dog";
+import { AppointmentStatusEnum } from "@/domain/enums/AppointmentStatusEnum";
+import { Appointment, AppointmentRating, AppointmentStatus } from "@/domain/Appointment";
+import { Volunteer } from "@/domain/Volunteer";
+import { Dog } from "@/domain/Dog";
 
 import AppointmentRepository, { AppointmentRatingsListener, AppointmentsListener, AppointmentStatesListener } from "@/shared/repositories/AppointmentRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
 import { getRepositoryOperationErrorMessage, getRepositoryOperationUndefinedDataMessage } from "@/shared/repositories/utils/RepositoryOperationError";
 import { getDateCompareOperator, getDateSortOperator, RepositoryDateCompareEnum } from "@/shared/repositories/enums/RepositoryDate";
-import { dateToTimestamp, timestampToDate } from "../utils/FirebaseExtensions";
 
-import { AppointmentStatusEnum } from "@/shared/data/enums/AppointmentStatusEnum";
+import { dateValueToTimestamp, timestampToDateValue } from "@/services/firebase/utils/FirebaseExtensions";
+import { now } from "@/domain/utils/TimeHelpers";
+
+const appointmentStatusToNumber = (status: AppointmentStatusEnum): number => {
+    const statusMap: Record<AppointmentStatusEnum, number> = {
+        pending: 0,
+        confirmed: 1,
+        canceled: 2,
+        completed: 3,
+    }
+
+    return statusMap[status]
+}
+
+const appointmentStatusFromNumber = (status: number): AppointmentStatusEnum => {
+    const statusMap: Record<number, AppointmentStatusEnum> = {
+        0: "pending",
+        1: "confirmed",
+        2: "canceled",
+        3: "completed",
+    }
+
+    return statusMap[status]
+}
 
 const appointmentConverter: FirestoreDataConverter<Appointment, FirebaseAppointmentDTO> = {
     toFirestore: (data: Appointment) => {
@@ -22,56 +45,43 @@ const appointmentConverter: FirestoreDataConverter<Appointment, FirebaseAppointm
             id: data.id,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
-            createdAt: dateToTimestamp(data.createdAt),
-            date: dateToTimestamp(data.date),
+            createdAt: dateValueToTimestamp(data.createdAt),
+            date: dateValueToTimestamp(data.date),
             type: data.type
         }
     },
     fromFirestore: (snap: QueryDocumentSnapshot) => {
         const data = snap.data() as FirebaseAppointmentDTO
         return {
-            id: data.id,
+            id: snap.id,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
-            createdAt: timestampToDate(data.createdAt),
-            date: timestampToDate(data.date),
+            createdAt: timestampToDateValue(data.createdAt),
+            date: timestampToDateValue(data.date),
             type: data.type
         }
     }
 }
 const statusConverter: FirestoreDataConverter<AppointmentStatus, FirebaseAppointmentStatusDTO> = {
     toFirestore: (data: AppointmentStatus) => {
-        const statusMap: Record<string, number> = {
-            pending: 0,
-            confirmed: 1,
-            canceled: 2,
-            completed: 3,
-        }
-
         return {
             appointmentId: data.appointmentId,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
-            status: statusMap[data.status],
-            updateAt: dateToTimestamp(data.updateAt),
+            status: appointmentStatusToNumber(data.status),
+            updateAt: dateValueToTimestamp(data.updateAt),
             updatedBy: data.updatedBy
         }
     },
     fromFirestore: (snap: QueryDocumentSnapshot) => {
         const data = snap.data() as FirebaseAppointmentStatusDTO
-        const statusMap: Record<number, AppointmentStatus["status"]> = {
-            0: "pending",
-            1: "confirmed",
-            2: "canceled",
-            3: "completed",
-        }
 
         return {
             appointmentId: data.appointmentId,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
-            status: statusMap[data.status],
-            updateAt: timestampToDate(data.updateAt),
+            status: appointmentStatusFromNumber(data.status),
+            updateAt: timestampToDateValue(data.updateAt),
             updatedBy: data.updatedBy
         }
     }
@@ -82,7 +92,7 @@ const ratingsConverter: FirestoreDataConverter<AppointmentRating, FirebaseAppoin
             appointmentId: data.appointmentId,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
-            updateAt: dateToTimestamp(data.updateAt),
+            updateAt: dateValueToTimestamp(data.updateAt),
             rating: data.rating,
             comment: data.comment
         }
@@ -93,7 +103,7 @@ const ratingsConverter: FirestoreDataConverter<AppointmentRating, FirebaseAppoin
             appointmentId: data.appointmentId,
             dogId: data.dogId,
             volunteerId: data.volunteerId,
-            updateAt: timestampToDate(data.updateAt),
+            updateAt: timestampToDateValue(data.updateAt),
             rating: data.rating,
             comment: data.comment
         }
@@ -112,7 +122,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
     ): Query<DocumentData, DocumentData> {
         if (!queryCursor?.id) {
             return query(
-                collection(firebaseDatabase, collectionName),
+                collection(firestore, collectionName),
                 where("date", getDateCompareOperator(dateCompare), Timestamp.now()),
                 orderBy("date", getDateSortOperator(dateCompare)),
                 limit(queryLimit)
@@ -120,7 +130,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         return query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where("date", getDateCompareOperator(dateCompare), Timestamp.now()),
             orderBy("date", getDateSortOperator(dateCompare)),
             startAfter(queryCursor.date),
@@ -135,7 +145,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
     ) {
         const q = createAllAppointmentQuery(date, queryCursor, queryLimit)
             .withConverter(appointmentConverter)
-  
+
         return onSnapshot(q, (snap) => {
             const data = new Map(snap.docs.map(t => [t.id, t.data()]))
             listener(data)
@@ -148,19 +158,21 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         queryCursor: AppointmentStatus | null,
         queryLimit: number
     ): Query<DocumentData, DocumentData> {
+        const statusValues = status.map((value) => appointmentStatusToNumber(value))
+
         if (!queryCursor) {
             if (!volunteer?.id) {
                 return query(
-                    collection(firebaseDatabase, statusCollectionName),
-                    where("status", "in", status),
+                    collection(firestore, statusCollectionName),
+                    where("status", "in", statusValues),
                     orderBy("updateAt", "asc"),
                     limit(queryLimit)
                 )
             }
 
             return query(
-                collection(firebaseDatabase, statusCollectionName),
-                where("status", "in", status),
+                collection(firestore, statusCollectionName),
+                where("status", "in", statusValues),
                 where("volunteerId", "==", volunteer.id),
                 orderBy("updateAt", "asc"),
                 limit(queryLimit)
@@ -169,8 +181,8 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
 
         if (!volunteer?.id) {
             return query(
-                collection(firebaseDatabase, statusCollectionName),
-                where("status", "in", status),
+                collection(firestore, statusCollectionName),
+                where("status", "in", statusValues),
                 orderBy("updateAt", "asc"),
                 startAfter(queryCursor.updateAt),
                 limit(queryLimit)
@@ -178,8 +190,8 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         return query(
-            collection(firebaseDatabase, statusCollectionName),
-            where("status", "in", status),
+            collection(firestore, statusCollectionName),
+            where("status", "in", statusValues),
             where("volunteerId", "==", volunteer.id),
             orderBy("updateAt", "asc"),
             startAfter(queryCursor.updateAt),
@@ -209,7 +221,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
     ): Query<DocumentData, DocumentData> {
         if (!queryCursor?.id) {
             return query(
-                collection(firebaseDatabase, collectionName),
+                collection(firestore, collectionName),
                 where("volunteerId", "==", volunteer?.id),
                 orderBy("date", getDateSortOperator("future")),
                 limit(queryLimit)
@@ -217,7 +229,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         return query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where("volunteerId", "==", volunteer?.id),
             orderBy("date", getDateSortOperator("future")),
             startAfter(queryCursor.date),
@@ -247,7 +259,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         listener: AppointmentsListener
     ) {
         const q = query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where("dogId", "==", dogId),
         )
             .withConverter(appointmentConverter)
@@ -263,10 +275,10 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         listener: AppointmentsListener
     ) {
         if (!appointmentIds.length)
-            return () => {}
+            return () => { }
 
         const q = query(
-            collection(firebaseDatabase, collectionName),
+            collection(firestore, collectionName),
             where(documentId(), "in", appointmentIds)
         )
             .withConverter(appointmentConverter)
@@ -284,7 +296,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
             return () => { }
 
         const q = query(
-            collection(firebaseDatabase, statusCollectionName),
+            collection(firestore, statusCollectionName),
             where(documentId(), "in", appoinmentIds)
         )
             .withConverter(statusConverter)
@@ -302,7 +314,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
             return () => { }
 
         const q = query(
-            collection(firebaseDatabase, ratingCollectionName),
+            collection(firestore, ratingCollectionName),
             where(documentId(), "in", appoinmentIds)
         )
             .withConverter(ratingsConverter)
@@ -322,7 +334,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
 
         if (!queryCursor?.updateAt) {
             return query(
-                collection(firebaseDatabase, ratingCollectionName),
+                collection(firestore, ratingCollectionName),
                 where("dogId", "==", dog.id),
                 orderBy("updateAt", getDateSortOperator(dateCompare)),
                 limit(queryLimit)
@@ -330,7 +342,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         return query(
-            collection(firebaseDatabase, ratingCollectionName),
+            collection(firestore, ratingCollectionName),
             where("dogId", "==", dog.id),
             orderBy("updateAt", getDateSortOperator(dateCompare)),
             startAfter(queryCursor.updateAt),
@@ -344,7 +356,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         listener: AppointmentRatingsListener
     ) {
         if (!dog?.id)
-            return () => {}
+            return () => { }
 
         const q = createDogRatingQuery(dog, "past", queryCursor, queryLimit)
             .withConverter(ratingsConverter)
@@ -356,34 +368,30 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
     }
 
     async function createAppointment(
-        appointment: Appointment,
-        operationCallback: RepositoryOperationCallback
-    ) {
-        if (!appointment) {
-            const e = getRepositoryOperationErrorMessage("undefinedData")
-            operationCallback("error", e)
-            return
+        appointment: Appointment
+    ): Promise<string> {
+        if (!appointment)
+            throw new Error(getRepositoryOperationErrorMessage("undefinedData"))
+
+        const appointmentsCollection = collection(firestore, collectionName)
+            .withConverter(appointmentConverter)
+
+        const t = await addDoc(appointmentsCollection, appointment)
+
+        const state: AppointmentStatus = {
+            appointmentId: t.id,
+            volunteerId: appointment.volunteerId,
+            dogId: appointment.dogId,
+            status: "pending",
+            updateAt: now(),
+            updatedBy: appointment.volunteerId
         }
 
-        try {
-            const t = await addDoc(collection(firebaseDatabase, collectionName), appointment)
+        const statusCollection = collection(firestore, statusCollectionName)
+            .withConverter(statusConverter)
 
-            const state: AppointmentStatus = {
-                appointmentId: t.id,
-                volunteerId: appointment.volunteerId,
-                dogId: appointment.dogId,
-                status: "pending",
-                updateAt: new Date(),
-                updatedBy: appointment.volunteerId
-            }
-            await setDoc(doc(collection(firebaseDatabase, statusCollectionName), t.id), state)
-        } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
-            return;
-        }
-
-        operationCallback("success")
+        await setDoc(doc(statusCollection, t.id), state)
+        return t.id
     }
 
     async function updateAppointment(
@@ -397,9 +405,10 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         try {
-            const c = collection(firebaseDatabase, collectionName)
-            const d = doc(c, appointment.id)
-            await updateDoc(d, appointment)
+            const c = collection(firestore, collectionName)
+                .withConverter(appointmentConverter)
+
+            await setDoc(doc(c, appointment.id), appointment)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -410,19 +419,20 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
     }
     async function updateAppointmentStatus(
         appointment: Appointment,
-        appointmentState: AppointmentStatus,
+        status: AppointmentStatus,
         operationCallback: RepositoryOperationCallback
     ) {
-        if (!appointment?.id || !appointmentState) {
+        if (!appointment?.id || !status) {
             const e = getRepositoryOperationErrorMessage("")
             operationCallback("error", e)
             return
         }
 
         try {
-            const c = collection(firebaseDatabase, statusCollectionName)
-            const d = doc(c, appointment.id)
-            await updateDoc(d, appointmentState)
+            const c = collection(firestore, statusCollectionName)
+                .withConverter(statusConverter)
+
+            await setDoc(doc(c, appointment.id), status)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -444,8 +454,10 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         try {
-            const t = await doc(collection(firebaseDatabase, collectionName), appointment.id)
-            await setDoc(doc(collection(firebaseDatabase, ratingCollectionName), t.id), rating)
+            const ratingCollection = doc(collection(firestore, ratingCollectionName))
+                .withConverter(ratingsConverter)
+
+            await setDoc(doc(ratingCollection, appointment.id), rating)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -466,9 +478,10 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         try {
-            const c = collection(firebaseDatabase, collectionName)
-            const t = await doc(c, appointment.id)
-            await updateDoc(doc(collection(firebaseDatabase, ratingCollectionName), t.id), rating)
+            const ratingCollection = doc(collection(firestore, ratingCollectionName))
+                .withConverter(ratingsConverter)
+
+            await updateDoc(doc(ratingCollection, appointment.id), rating)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -489,8 +502,15 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         }
 
         try {
-            await deleteDoc(doc(collection(firebaseDatabase, collectionName), appointment.id))
-            await deleteDoc(doc(collection(firebaseDatabase, statusCollectionName), appointment.id))
+            const appointmentCollection = collection(firestore, collectionName)
+                .withConverter(appointmentConverter)
+
+            await deleteDoc(doc(appointmentCollection, appointment.id))
+
+            const statusCollection = collection(firestore, statusCollectionName)
+                .withConverter(statusConverter)
+
+            await deleteDoc(doc(statusCollection, appointment.id))
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)

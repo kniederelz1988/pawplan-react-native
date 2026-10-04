@@ -1,7 +1,8 @@
-import { Fragment } from "react";
 import type { ReactNode } from "react";
+
 import { StyleProp, View, ViewStyle } from "react-native";
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 type ListViewProps<T> = {
     data: readonly T[];

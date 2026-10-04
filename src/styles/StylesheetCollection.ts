@@ -1,6 +1,5 @@
-import { ImageStyle, StyleProp as RNStyleProp, StyleSheet } from "react-native";
-import { TextStyle, ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import { LayoutSize } from "./hooks/useResponsiveLayout";
+import { ViewStyle, TextStyle, ImageStyle, StyleProp as RNStyleProp, StyleSheet } from "react-native";
+import { LayoutSize } from "@/hooks/useResponsiveLayout";
 
 export namespace StylesheetCollection {
   type Styles = TextStyle & ImageStyle & ViewStyle;

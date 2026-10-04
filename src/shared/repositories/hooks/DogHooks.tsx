@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useAppDependencies } from "@/shared/dependencies/hooks/useAppDependencies";
 
-import { Dog } from "@/shared/data/Dog";
+import { Dog } from "@/domain/Dog";
 
 import { showCreateDogFailedToast, showCreateDogSuccessToast, showDogUpdateFailedToast, showDogUpdateSuccessToast } from "@/services/toast/toastEvents";
 

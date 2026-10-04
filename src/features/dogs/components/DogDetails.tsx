@@ -1,19 +1,15 @@
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import { Text, View, Button, Image } from "react-native"
-import { Stack } from "expo-router"
 
-import useRouterNavigation from "@/features/navigation/hooks/useRouterNavigation"
+import useNavigation from "@/hooks/useNavigation"
 
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
 
-import { Dog } from "@/shared/data/Dog"
-import { getDogAge } from "@/shared/data/utils/DogHelpers"
-
-import useDogsCollection from "@/shared/repositories/hooks/DogHooks"
+import { Dog } from "@/domain/Dog"
+import { getDogAge } from "@/domain/utils/DogHelpers"
 
 import AppointmentRatingCard from "@/features/appointments/components/AppointmentRatingCard"
 import { useAppointmentRatingsFilteredByDog } from "@/shared/repositories/hooks/AppointmentHooks"
-import { ListView } from "@/components/ListView"
 
 import DogLikeButton from "@/features/dogs/components/DogLikeButton"
 import DogGenderIcon from "@/features/dogs/components/DogGenderIcon"
@@ -22,16 +18,16 @@ import DogSizeIcon from "@/features/dogs/components/DogSizeIcon"
 import { Header1, Header2, SubHeader2 } from "@/components/Header"
 import Space from "@/components/Space"
 import Divider from "@/components/Divider"
+import { ListView } from "@/components/ListView"
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
-import { Spacer } from "../../../components/Spacer"
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 type DogDetailsCardProps = {
     dog: Dog
 }
 
 function DogDetailsCard({ dog }: DogDetailsCardProps) {
-    const navigation = useRouterNavigation()
+    const navigation = useNavigation()
     const { cardStyles } = useResponsiveStyles()
 
     const { volunteer } = useVolunteer()
@@ -88,7 +84,7 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
 
                     <View style={cardStyles.itemButtons}>
                         <Button title="Book appointment" onPress={() => {
-                            navigation.push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id!! })
+                            navigation.push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id ?? "" })
                         }} />
                     </View>
                 </View>
@@ -98,64 +94,59 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
 }
 
 type DogDetailsProps = {
-    dogId: string
+    dog: Dog
 }
 
-export default function DogDetails({ dogId }: DogDetailsProps) {
+export default function DogDetails({ dog }: DogDetailsProps) {
     const { globalStyles, layoutStyles } = useResponsiveStyles()
-
-    const { dogs } = useDogsCollection(dogId ? [dogId] : null)
-    const dog = useMemo(() => { return dogs.at(0) ?? null }, [dogs])
 
     const { ratings, for: ratingsFilter } = useAppointmentRatingsFilteredByDog(5)
 
-    useEffect(() => ratingsFilter(dog), [dog, ratingsFilter])
+    useEffect(() => ratingsFilter(dog))
 
-    return (dog &&
-        <>
-            <View style={[globalStyles.contentContainer, layoutStyles.listContainer, layoutStyles.gapLarge, layoutStyles.defaultColumnContainer, layoutStyles.mediumRowContainer, layoutStyles.largeRowContainer]}>
-                <View style={layoutStyles.rowSidebar}>
-                    <View style={{ width: "100%", maxWidth: 500, marginHorizontal: "auto" }}>
-                        <View style={{ flexDirection: "column" }}>
-                            <DogDetailsCard dog={dog} />
-                        </View>
+    return (
+        <View style={[globalStyles.contentContainer, layoutStyles.listContainer, layoutStyles.gapLarge, layoutStyles.defaultColumnContainer, layoutStyles.mediumRowContainer, layoutStyles.largeRowContainer]}>
+            <View style={layoutStyles.rowSidebar}>
+                <View style={{ width: "100%", maxWidth: 500, marginHorizontal: "auto" }}>
+                    <View style={{ flexDirection: "column" }}>
+                        <DogDetailsCard dog={dog} />
                     </View>
                 </View>
-
-                <View style={layoutStyles.rowContent}>
-                    <Divider>
-                        <Header2 accessibilityRole="header" style={globalStyles.textCenter}>Description</Header2>
-                    </Divider>
-
-                    <Text accessibilityRole="text">{dog.description}</Text>
-
-                    <Space />
-
-                    <Divider>
-                        <Header2 accessibilityRole="header" style={globalStyles.textCenter}>Ratings</Header2>
-                    </Divider>
-
-                    <SubHeader2 accessibilityRole="summary">
-                        {
-                            ratings.length > 0
-                                ? `${ratings.length} ratings found..`
-                                : "No ratings found.."
-                        }
-                    </SubHeader2>
-
-                    <Space />
-
-                    <ListView
-                        data={ratings}
-                        
-                        style={layoutStyles.list} containerStyle={[layoutStyles.listContainer, layoutStyles.gapLarge]} wrapperStyle={[layoutStyles.listWrapper, layoutStyles.gapLarge]}
-                        keyExtractor={(rating) => rating.appointmentId}
-                        renderItem={(rating) => <AppointmentRatingCard data={rating} />}
-                    />
-
-                </View>
             </View>
-        </>
+
+            <View style={layoutStyles.rowContent}>
+                <Divider>
+                    <Header2 accessibilityRole="header" style={globalStyles.textCenter}>Description</Header2>
+                </Divider>
+
+                <Text accessibilityRole="text">{dog.description}</Text>
+
+                <Space />
+
+                <Divider>
+                    <Header2 accessibilityRole="header" style={globalStyles.textCenter}>Ratings</Header2>
+                </Divider>
+
+                <SubHeader2 accessibilityRole="summary">
+                    {
+                        ratings.length > 0
+                            ? `${ratings.length} ratings found..`
+                            : "No ratings found.."
+                    }
+                </SubHeader2>
+
+                <Space />
+
+                <ListView
+                    data={ratings}
+
+                    style={layoutStyles.list} containerStyle={[layoutStyles.listContainer, layoutStyles.gapLarge]} wrapperStyle={[layoutStyles.listWrapper, layoutStyles.gapLarge]}
+                    keyExtractor={(rating) => rating.appointmentId}
+                    renderItem={(rating) => <AppointmentRatingCard data={rating} />}
+                />
+
+            </View>
+        </View>
     )
 }
 

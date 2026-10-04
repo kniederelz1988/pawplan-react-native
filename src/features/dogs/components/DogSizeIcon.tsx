@@ -2,8 +2,8 @@ import { ReactElement } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { Dog as DogIcon } from "lucide-react-native";
 
-import { DogSizeEnum } from "@/shared/data/enums/DogSizeEnum";
-import { getSizeTitle } from "@/shared/data/utils/DogHelpers";
+import { DogSizeEnum } from "@/domain/enums/DogSizeEnum";
+import { getSizeTitle } from "@/domain/utils/DogHelpers";
 
 type Props = {
     size: DogSizeEnum;

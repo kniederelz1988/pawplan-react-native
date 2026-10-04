@@ -1,8 +1,8 @@
-import { Dog } from "@/shared/data/Dog";
-import { DogGenderEnum } from "@/shared/data/enums/DogGenderEnum";
-import { DogSizeEnum } from "@/shared/data/enums/DogSizeEnum";
-import { getDifferenceInYearOrMonth } from "@/shared/data/utils/TimeHelpers";
+import { Dog } from "@/domain/Dog";
+import { DogGenderEnum } from "@/domain/enums/DogGenderEnum";
+import { DogSizeEnum } from "@/domain/enums/DogSizeEnum";
 
+import { getDifferenceInYearOrMonth, now } from "@/domain/utils/TimeHelpers";
 
 export function getBreedTitle(breed: string) {
     if (!breed) {
@@ -37,5 +37,5 @@ export function getSizeTitle(size: DogSizeEnum) {
 }
 
 export function getDogAge(dog: Dog): string {
-    return getDifferenceInYearOrMonth(dog.birthday, new Date());
+    return getDifferenceInYearOrMonth(dog.birthday, now());
 }

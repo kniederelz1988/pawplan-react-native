@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 export function Spacer() {
     const { globalStyles } = useResponsiveStyles();

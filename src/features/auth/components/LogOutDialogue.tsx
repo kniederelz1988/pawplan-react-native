@@ -14,17 +14,17 @@ type Props = {
     onClose: () => void
 }
 
-export default function LogInDialogue({ onClose }: Props) {
+export default function LogOutDialogue({ onClose }: Props) {
+    const { signOut } = useAuthContext()
+
     const { dialogStyles, layoutStyles } = useResponsiveStyles()
 
-    const { signIn } = useAuthContext()
-
-    const onLogInPress = useCallback(() => { signIn("alexmorgan@pawplan.com", "morganalex") }, [signIn])
+    const onLogOutPress = useCallback(() => { signOut() }, [signOut])
 
     return (
         <Pressable style={dialogStyles.dialogContainer}>
             <Divider>
-                <Header1>Login</Header1>
+                <Header1>LogOut</Header1>
             </Divider>
 
             <Space />
@@ -34,7 +34,7 @@ export default function LogInDialogue({ onClose }: Props) {
 
                 <Space />
 
-                <Button title="LogIn" color={colors.primaryButtonColor} onPress={onLogInPress} />
+                <Button title="LogOut" onPress={onLogOutPress} />
             </View>
         </Pressable>
     )

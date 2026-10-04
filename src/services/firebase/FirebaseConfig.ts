@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
 
-import { getApp, initializeApp } from '@firebase/app';
-import { getAuth } from '@firebase/auth';
-import { getFirestore } from '@firebase/firestore';
+import { getApp, initializeApp } from '@react-native-firebase/app';
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore } from '@react-native-firebase/firestore';
 
 // web requires dynamic initialization on web prior to using firebase
 if (Platform.OS === 'web') {
@@ -20,5 +20,5 @@ if (Platform.OS === 'web') {
 const firebaseApp = getApp();
 
 export const firebaseAuth = getAuth(firebaseApp);
-export const firebaseDatabase = getFirestore(firebaseApp);
+export const firestore = getFirestore(firebaseApp);
 export default firebaseApp;

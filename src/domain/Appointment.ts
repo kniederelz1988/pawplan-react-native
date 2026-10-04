@@ -1,6 +1,7 @@
 import { DateValue } from "@internationalized/date"
-import { AppointmentStatusEnum } from "./enums/AppointmentStatusEnum"
-import { AppointmentTypeEnum } from "./enums/AppointmentTypeEnum"
+
+import { AppointmentStatusEnum } from "@/domain/enums/AppointmentStatusEnum"
+import { AppointmentTypeEnum } from "@/domain/enums/AppointmentTypeEnum"
 
 export declare type Appointment = {
     id?             : string

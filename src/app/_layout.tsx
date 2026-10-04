@@ -5,7 +5,7 @@ import { AuthContextProvider } from "@/shared/auth/contexts/AuthContextProvider"
 
 import ToastHost from "@/services/toast/components/ToastHost";
 
-import HeaderMenu from "@/components/Menu";
+import HeaderMenu from "@/components/HeaderMenu";
 
 export default function RootLayout() {
   return (
@@ -13,18 +13,17 @@ export default function RootLayout() {
       <AppDependenciesProvider>
         <AuthContextProvider>
           <Stack screenOptions={{
-            headerShown: false,
+            headerShown: true,
             headerRight: () => <HeaderMenu />,
           }}>
 
             <Stack.Screen name="index" />
-            <Stack.Screen name="test" options={{ title: "Test" }} />
             <Stack.Screen name="dogs" />
             <Stack.Screen name="dogs/details" />
 
-            <Stack.Screen name="auth/login" options={{ presentation: "transparentModal" }} />
-            <Stack.Screen name="appointments/book" options={{ presentation: "transparentModal" }} />
-
+            <Stack.Screen name="auth/login" options={{ headerShown: false, presentation: "transparentModal" }} />
+            <Stack.Screen name="auth/logout" options={{ headerShown: false, presentation: "transparentModal" }} />
+            <Stack.Screen name="appointments/book" options={{ headerShown: false, presentation: "transparentModal" }} />
           </Stack>
         </AuthContextProvider>
       </AppDependenciesProvider>

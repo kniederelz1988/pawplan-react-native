@@ -1,29 +1,29 @@
-import { AuthUser } from "@/shared/data/AuthUser";
-import AuthRepository, { AuthListener, AuthUnsubscribe } from "@/shared/repositories/AuthRepository";
-
 import { firebaseAuth } from "@firebase/FirebaseConfig"
-import { signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "firebase/auth"
+import { signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "@react-native-firebase/auth"
+
+import { AuthUser } from "@/domain/AuthUser";
+import AuthRepository, { AuthListener, AuthUnsubscribe } from "@/shared/repositories/AuthRepository";
 
 export default function FirebaseAuthRepository(): AuthRepository {
     function subscribeToUser(listener: AuthListener): AuthUnsubscribe {
         return onAuthStateChanged(firebaseAuth, user => {
             if (!user) {
-                listener("success", null)
+                listener("error", null)
                 return
             }
 
             listener("success", {
                 userId: user.uid,
-                userEmail: user.email!!
+                userEmail: user.email ?? ""
             })
         })
     }
 
     async function signIn(email: string, password: string): Promise<AuthUser> {
-        const authCred = await signInWithEmailAndPassword(firebaseAuth, email, password)
+        const cred = await signInWithEmailAndPassword(firebaseAuth, email, password)
         return {
-            userId: authCred?.user.uid,
-            userEmail: authCred?.user.email!!
+            userId: cred.user.uid,
+            userEmail: cred.user.email ?? email
         }
     }
     async function signOut() {

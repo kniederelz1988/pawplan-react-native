@@ -1,17 +1,18 @@
-import { firebaseDatabase } from "@firebase/FirebaseConfig"
-import { collection, FirestoreDataConverter, onSnapshot, query, QueryDocumentSnapshot, where, documentId, addDoc, doc, updateDoc } from "firebase/firestore"
+import { firestore } from "@firebase/FirebaseConfig"
+import { collection, FirestoreDataConverter, onSnapshot, query, QueryDocumentSnapshot, where, documentId, addDoc, doc, updateDoc } from "@firebase/firestore"
 
-import { Dog } from "@/shared/data/Dog";
+import { DogGenderEnum } from "@/domain/enums/DogGenderEnum";
+import { DogSizeEnum } from "@/domain/enums/DogSizeEnum";
+import { Dog } from "@/domain/Dog";
+
+import { FirebaseDogDTO } from "@/services/firebase/models/FirebaseDogDTO";
 
 import DogRepository, { DogRepositoryListener } from "@/shared/repositories/DogRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
 import { getRepositoryOperationErrorMessage, getRepositoryOperationUndefinedDataMessage } from "@/shared/repositories/utils/RepositoryOperationError";
-import { FirebaseDogDTO } from "../models/FirebaseDogDTO";
-import { dateToTimestamp, timestampToDate } from "../utils/FirebaseExtensions";
 
-import { DogGenderEnum } from "@/shared/data/enums/DogGenderEnum";
-import { DogSizeEnum } from "@/shared/data/enums/DogSizeEnum";
+import { dateValueToTimestamp, timestampToDateValue } from "../utils/FirebaseExtensions";
 
 const dogConverter: FirestoreDataConverter<Dog, FirebaseDogDTO> = {
 
@@ -31,10 +32,10 @@ const dogConverter: FirestoreDataConverter<Dog, FirebaseDogDTO> = {
         return {
             id: data.id,
             name: data.name,
-            birthday: dateToTimestamp(data.birthday),
-            shelterDate: dateToTimestamp(data.shelterDate),
+            birthday: dateValueToTimestamp(data.birthday),
+            shelterDate: dateValueToTimestamp(data.shelterDate),
             adoptionDateValid: data.adoptionDateValid,
-            adoptionDate: dateToTimestamp(data.adoptionDate),
+            adoptionDate: dateValueToTimestamp(data.adoptionDate),
             breed: data.breed,
             gender: genderMap[data.gender],
             size: sizeMap[data.size],
@@ -59,10 +60,10 @@ const dogConverter: FirestoreDataConverter<Dog, FirebaseDogDTO> = {
         return {
             id: data.id,
             name: data.name,
-            birthday: timestampToDate(data.birthday),
-            shelterDate: timestampToDate(data.shelterDate),
+            birthday: timestampToDateValue(data.birthday),
+            shelterDate: timestampToDateValue(data.shelterDate),
             adoptionDateValid: data.adoptionDateValid,
-            adoptionDate: timestampToDate(data.adoptionDate),
+            adoptionDate: timestampToDateValue(data.adoptionDate),
             breed: "",
             gender: genderMap[data.gender],
             size: sizeMap[data.size],
@@ -77,7 +78,7 @@ export default function FirebaseDogRepository(): DogRepository {
 
     function subscribeForAllDogs(listener: DogRepositoryListener) {
         const q = query(
-            collection(firebaseDatabase, "dogs")
+            collection(firestore, "dogs")
         )
             .withConverter(dogConverter)
 
@@ -92,7 +93,7 @@ export default function FirebaseDogRepository(): DogRepository {
             return () => {}
 
         const q = query(
-            collection(firebaseDatabase, "dogs"),
+            collection(firestore, "dogs"),
             where(documentId(), "in", dogIds)
         )
             .withConverter(dogConverter)
@@ -111,7 +112,7 @@ export default function FirebaseDogRepository(): DogRepository {
         }
 
         try {
-            await addDoc(collection(firebaseDatabase, collectionName), dog)
+            await addDoc(collection(firestore, collectionName), dog)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)
             operationCallback("error", e)
@@ -128,7 +129,7 @@ export default function FirebaseDogRepository(): DogRepository {
         }
 
         try {
-            const d = doc(collection(firebaseDatabase, "dogs"), dog.id)
+            const d = doc(collection(firestore, "dogs"), dog.id)
             await updateDoc(d, dog)
         } catch (error) {
             const e = getRepositoryOperationErrorMessage(error)

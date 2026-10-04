@@ -1,8 +1,8 @@
-import { Appointment, AppointmentRating, AppointmentStatus } from "@/shared/data/Appointment"
-import { AppointmentStatusEnum } from "@/shared/data/enums/AppointmentStatusEnum"
+import { Appointment, AppointmentRating, AppointmentStatus } from "@/domain/Appointment"
+import { AppointmentStatusEnum } from "@/domain/enums/AppointmentStatusEnum"
 
-import { Volunteer } from "@/shared/data/Volunteer"
-import { Dog } from "@/shared/data/Dog"
+import { Volunteer } from "@/domain/Volunteer"
+import { Dog } from "@/domain/Dog"
 
 import { RepositoryDateCompareEnum } from "@/shared/repositories/enums/RepositoryDate"
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback"
@@ -69,8 +69,8 @@ export default interface AppointmentRepository {
 
     createAppointment(
         appointment: Appointment,
-        operationCallback: RepositoryOperationCallback
-    ): Promise<void>
+        operationCallback?: RepositoryOperationCallback
+    ): Promise<string>
 
     updateAppointment(
         appointment: Appointment,

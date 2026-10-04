@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react"
 import { Button, Pressable, View } from "react-native"
 
-import { getDateFromToday, getDateTime, now } from "@/shared/data/utils/TimeHelpers"
 import { CalendarDate, CalendarDateTime } from "@internationalized/date"
 
-import { Appointment } from "@/shared/data/Appointment"
-import { useAppointmentRepository } from "@/shared/repositories/hooks/AppointmentHooks"
+import { getDateFromToday, getDateTime, now } from "@/domain/utils/TimeHelpers"
+import { Appointment } from "@/domain/Appointment"
 
+import { useAppointmentRepository } from "@/shared/repositories/hooks/AppointmentHooks"
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
 
 import Divider from "@/components/Divider"
@@ -16,46 +16,50 @@ import { TimeButton } from "@/components/TimeButton"
 import { DateButton } from "@/components/DateButton"
 import { ListView } from "@/components/ListView"
 
-import useResponsiveStyles from "@/styles/hooks/useResponsiveStyles";
-import { useResponsiveColumnBasedOnSize, useResponsiveColumnBasedOnType } from "@/styles/hooks/useResponsiveColumn"
-import { Spacer } from "@/components/Spacer"
+import useResponsiveStyles from "@/hooks/useResponsiveStyles";
+import { useResponsiveColumnBasedOnType } from "@/hooks/useResponsiveColumn"
 
 type AppointmentDialogueProps = {
-    dogId: string,
+    dogId?: string,
     onClose: () => void
 }
 
-export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentDialogueProps) { 
+export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentDialogueProps) {
     const { dialogStyles, layoutStyles } = useResponsiveStyles()
 
     const timeColumnCount = useResponsiveColumnBasedOnType(5, { "portrait": 4 })
     const dateColumnCount = useResponsiveColumnBasedOnType(4, { "portrait": 4 })
 
-    const { volunteer, volunteerLoading } = useVolunteer()
+    const { volunteer } = useVolunteer()
     const { createAppointment } = useAppointmentRepository()
 
-    const dateOffset = useMemo(() => [1, 2, 3, 4, 5, 6, 7, 8], [])
-    const timeSlots = useMemo(() => [
-        "09:00", "09:30", "10:00", "10:30", "11:00",
-        "11:30", "12:00", "12:30", "13:00", "13:30",
-        "14:00", "14:30", "15:00", "15:30", "16:00",
-        "16:30", "17:00", "17:30", "18:00", "18:30"
-    ], [])
-
+    const dates = useMemo(() => {
+        const dateOffset = [1, 2, 3, 4, 5, 6, 7, 8]
+        return dateOffset.map((value) => getDateFromToday(value))
+    }, [])
     const [date, setDate] = useState<CalendarDate | null>()
+
+    const times = useMemo(() => {
+        const timeSlots = [
+            "09:00", "09:30", "10:00", "10:30", "11:00",
+            "11:30", "12:00", "12:30", "13:00", "13:30",
+            "14:00", "14:30", "15:00", "15:30", "16:00",
+            "16:30", "17:00", "17:30", "18:00", "18:30"
+        ]
+        return timeSlots.map((value) => {
+            const [hour, min] = value.split(":")
+
+            return getDateTime(date ? date : getDateFromToday(0),
+                parseInt(hour), parseInt(min)
+            )
+        })
+    }, [date])
     const [time, setTime] = useState<CalendarDateTime | null>()
 
-    const dates = useMemo(() => dateOffset.map((value) => getDateFromToday(value)), [dateOffset])
-    const times = useMemo(() => timeSlots.map((value) => {
-        const [hour, min] = value.split(":")
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-        return getDateTime(date ? date : getDateFromToday(0),
-            parseInt(hour), parseInt(min)
-        )
-    }), [date])
-
-    function onSubmit() {
-        if (!time || volunteerLoading || !volunteer?.id)
+    async function onSubmit() {
+        if (!dogId || !time || !volunteer?.id || isSubmitting)
             return
 
         const appointment: Appointment = {
@@ -65,10 +69,18 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
             date: time,
             createdAt: now()
         }
-        createAppointment(appointment)
 
-        // TODO MOVE THIS IN TO A CALLBACK FOR CREATE APPOINTMENT
-        onClose()
+        try {
+            setIsSubmitting(true)
+
+            await createAppointment(appointment)
+            onClose()
+        } catch {
+            // Keep dialog open.
+            // Toast is already shown by the hook.
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -124,7 +136,11 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
 
                 <Space />
 
-                <Button title="Submit" disabled={!time || volunteerLoading || !volunteer?.id} onPress={onSubmit} />
+                <Button
+                    title={isSubmitting ? "Submitting..." : "Submit"}
+                    disabled={!time || !volunteer?.id || isSubmitting}
+                    onPress={onSubmit}
+                />
             </View>
         </Pressable>
     )
