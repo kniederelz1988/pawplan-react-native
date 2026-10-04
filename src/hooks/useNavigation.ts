@@ -109,7 +109,7 @@ export default function useNavigation() {
         const timeout = setTimeout(initIntent, 100)
 
         return () => clearTimeout(timeout)
-    })
+    }, [initIntent])
 
 
 

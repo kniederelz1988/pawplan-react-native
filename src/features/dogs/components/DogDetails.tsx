@@ -102,8 +102,10 @@ export default function DogDetails({ dog }: DogDetailsProps) {
 
     const { ratings, for: ratingsFilter } = useAppointmentRatingsFilteredByDog(5)
 
-    useEffect(() => ratingsFilter(dog))
-
+    useEffect(() => {
+        ratingsFilter(dog)
+    }, [dog, ratingsFilter])
+    
     return (
         <View style={[globalStyles.contentContainer, layoutStyles.listContainer, layoutStyles.gapLarge, layoutStyles.defaultColumnContainer, layoutStyles.mediumRowContainer, layoutStyles.largeRowContainer]}>
             <View style={layoutStyles.rowSidebar}>
