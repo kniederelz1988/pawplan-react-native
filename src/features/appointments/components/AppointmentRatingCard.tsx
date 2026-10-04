@@ -30,10 +30,10 @@ export default function AppointmentRatingCard({ data }: Props) {
 
                 <View style={[layoutStyles.rowContent, globalStyles.alignEnd]}>
                     <View
-                        style={[ layoutStyles.defaultRowContainer]}
+                        style={[layoutStyles.defaultRowContainer]}
                         accessible
                         accessibilityRole="summary"
-                        accessibilityLabel={`Average rating of ${data.rating} out of 5 stars`}
+                        accessibilityLabel={`Rating: ${data.rating} out of 5 stars`}
                     >
                         {Array.from({ length: 5 }, (_, index) => (
                             <Star
@@ -42,7 +42,8 @@ export default function AppointmentRatingCard({ data }: Props) {
                                 color={colors.highlightColor}
                                 fill={index < filledStars ? colors.highlightColor : "white"}
                             />
-                        ))}
+                        ))
+                        }
                     </View>
                 </View>
             </View>

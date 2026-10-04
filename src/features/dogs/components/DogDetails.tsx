@@ -55,8 +55,12 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
                     }
 
                     <View style={cardStyles.itemImageContainer}>
-                        <Image source={{ uri: dog.imageURL }}
+                        <Image
                             style={cardStyles.itemImage}
+                            accessible
+                            accessibilityRole="image"
+                            accessibilityLabel={`Photo of ${dog.name}`}
+                            source={{ uri: dog.imageURL }}
                         />
                     </View>
 
@@ -77,15 +81,18 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
                 </View>
 
                 <View style={cardStyles.itemContent}>
-                    <Header1 accessibilityRole="header">{dog.name}</Header1>
+                    <Header1>{dog.name}</Header1>
                     <SubHeader2>{getDogAge(dog)}</SubHeader2>
 
                     <Space />
 
                     <View style={cardStyles.itemButtons}>
-                        <Button title="Book appointment" onPress={() => {
-                            navigation.push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id ?? "" })
-                        }} />
+                        <Button
+                            title="Book appointment"
+                            accessibilityLabel={`Book an appointment with ${dog.name}`}
+                            onPress={() => {
+                                navigation.push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id ?? "" })
+                            }} />
                     </View>
                 </View>
             </View>
@@ -105,7 +112,7 @@ export default function DogDetails({ dog }: DogDetailsProps) {
     useEffect(() => {
         ratingsFilter(dog)
     }, [dog, ratingsFilter])
-    
+
     return (
         <View style={[globalStyles.contentContainer, layoutStyles.listContainer, layoutStyles.gapLarge, layoutStyles.defaultColumnContainer, layoutStyles.mediumRowContainer, layoutStyles.largeRowContainer]}>
             <View style={layoutStyles.rowSidebar}>

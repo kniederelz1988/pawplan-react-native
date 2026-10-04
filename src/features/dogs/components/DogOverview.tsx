@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Button, Image, Text, View } from "react-native";
+import { Button, Image, Pressable, Text, View } from "react-native";
 
 import useNavigation from "@/hooks/useNavigation";
 
@@ -58,7 +58,13 @@ export function DogCard({ dog }: DogCardProps) {
                     }
 
                     <View style={cardStyles.itemImageContainer}>
-                        <Image style={cardStyles.itemImage} source={{ uri: dog.imageURL }} />
+                        <Image
+                            style={cardStyles.itemImage}
+                            accessible
+                            accessibilityRole="image"
+                            accessibilityLabel={`Photo of ${dog.name}`}
+                            source={{ uri: dog.imageURL }}
+                        />
                     </View>
 
                     <View style={[cardStyles.overlayItem, { left: 16, bottom: 16, width: "10%", aspectRatio: 1 }]}>
@@ -78,12 +84,15 @@ export function DogCard({ dog }: DogCardProps) {
                     <Space />
 
                     <View style={cardStyles.itemButtons}>
-                        <Button title="More..." onPress={() => {
-                            if (!dog?.id)
-                                return
-
-                            navigation.push("/dogs/details", { flag: "clear" }, { dogId: dog.id })
-                        }} />
+                        <Button
+                            title="Book appointment"
+                            accessibilityLabel={`View details for ${dog.name}`}
+                            onPress={() => {
+                                if (!dog?.id)
+                                    return
+                                
+                                navigation.push("/dogs/details", { flag: "clear" }, { dogId: dog.id })
+                            }} />
                     </View>
                 </View>
             </View>

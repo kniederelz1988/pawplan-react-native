@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Button, Pressable, View } from "react-native"
+import { Button, Pressable, Text, View } from "react-native"
 
 import { CalendarDate, CalendarDateTime } from "@internationalized/date"
 
@@ -8,6 +8,7 @@ import { Appointment } from "@/domain/Appointment"
 
 import { useAppointmentRepository } from "@/shared/repositories/hooks/AppointmentHooks"
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
+import { getRepositoryOperationErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError"
 
 import Divider from "@/components/Divider"
 import { Header1, Header2 } from "@/components/Header"
@@ -57,6 +58,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
     const [time, setTime] = useState<CalendarDateTime | null>()
 
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
     async function onSubmit() {
         if (!dogId || !time || !volunteer?.id || isSubmitting)
@@ -75,16 +77,21 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
 
             await createAppointment(appointment)
             onClose()
-        } catch {
-            // Keep dialog open.
-            // Toast is already shown by the hook.
+        } catch (error) {
+            const message = getRepositoryOperationErrorMessage(error)
+            setSubmitError(message ?? "Appointment could not be booked")
         } finally {
             setIsSubmitting(false)
         }
     }
 
     return (
-        <Pressable style={[dialogStyles.dialogContainer, layoutStyles.defaultColumnContainer]}>
+        <Pressable 
+            style={[dialogStyles.dialogContainer, layoutStyles.defaultColumnContainer]} 
+            accessible
+            accessibilityViewIsModal
+            importantForAccessibility="no-hide-descendants"
+        >
             <Divider>
                 <Header1>Choose a date</Header1>
             </Divider>
@@ -127,9 +134,19 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
                 />}
             />
 
+            {submitError && (
+                <Text
+                    accessibilityRole="alert"
+                    accessibilityLiveRegion="assertive"
+                >
+                    {submitError}
+                </Text>
+            )}
+
             <Space />
             <Space />
             <Space />
+
 
             <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
                 <Button title="Cancel" color={"grey"} onPress={onClose} />
@@ -139,6 +156,10 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
                 <Button
                     title={isSubmitting ? "Submitting..." : "Submit"}
                     disabled={!time || !volunteer?.id || isSubmitting}
+                    accessibilityState={{
+                        disabled: !time || !volunteer?.id || isSubmitting,
+                        busy: isSubmitting
+                    }}
                     onPress={onSubmit}
                 />
             </View>

@@ -13,10 +13,15 @@ export default function HeaderMenu() {
     const onCloseCallback = useCallback(() => setState(false), [setState])
 
     return <>
-        <Pressable style={menuStyles.menuButton} accessibilityRole="button" accessibilityLabel="Open menu"
+        <Pressable
+            style={menuStyles.menuButton}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel={state ? "Close menu" : "Open menu"}
+            accessibilityState={{ expanded: state }}
             onPress={() => setState(true)} >
             {
-                state ? <Text>X</Text> : <Text>⋮</Text>
+                <Text accessible={false}>{state ? "X" : "⋮"}</Text>
             }
         </Pressable>
 

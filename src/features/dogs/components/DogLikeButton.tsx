@@ -12,17 +12,24 @@ type Props = {
 export default function DogLikeButton({ data, style }: Props) {
     const { isFavourite, toggleFavourite } = useVolunteer()
 
+    const favourite = isFavourite(data)
+
     return (
         <Pressable
             style={style}
             accessible
             accessibilityRole="button"
-            accessibilityLabel={`Toggle like for ${data.name}`}
+            accessibilityLabel={
+                favourite
+                    ? `Remove ${data.name} from favourites`
+                    : `Add ${data.name} to favourites`
+            }
+            accessibilityState={{ selected: favourite }}
             onPress={() => toggleFavourite(data)}
         >
 
             <Heart size="70%"
-                fill={isFavourite(data) ? "red" : "transparent" }
+                fill={isFavourite(data) ? "red" : "transparent"}
                 color={isFavourite(data) ? "red" : "#35423D"}
                 strokeWidth={2.25}
             />
