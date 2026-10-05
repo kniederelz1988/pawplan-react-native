@@ -30,7 +30,7 @@ type DogCardProps = {
 }
 
 export function DogCard({ dog }: DogCardProps) {
-    const navigation = useNavigation()
+    const { push } = useNavigation()
     const { cardStyles } = useResponsiveStyles()
 
     const { volunteer } = useVolunteer()
@@ -85,13 +85,13 @@ export function DogCard({ dog }: DogCardProps) {
 
                     <View style={cardStyles.itemButtons}>
                         <Button
-                            title="Book appointment"
+                            title="View details"
                             accessibilityLabel={`View details for ${dog.name}`}
                             onPress={() => {
                                 if (!dog?.id)
                                     return
                                 
-                                navigation.push("/dogs/details", { flag: "clear" }, { dogId: dog.id })
+                                push("/dogs/details", { flag: "clear" }, { dogId: dog.id })
                             }} />
                     </View>
                 </View>

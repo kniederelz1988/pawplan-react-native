@@ -3,31 +3,37 @@ import { useCallback } from "react"
 import useNavigation, { NavigationParams, NavigationPath } from "@/hooks/useNavigation"
 
 export default function useNavigationIntent<T extends NavigationParams>() {
-    const navigation = useNavigation()
+    const { 
+        routeParameters,
+        followIntent: navigationFollowIntent,
+        toSource: navigationToSource,
+        replace,
+        back
+    } = useNavigation()
 
     const followIntent = useCallback(() => {
-        if (navigation.followIntent("keep"))
+        if (navigationFollowIntent("keep"))
             return
 
-        if (navigation.back())
+        if (back())
             return
 
-        navigation.replace("/", { flag: "clear" })
-    }, [navigation])
+        replace("/", { flag: "clear" })
+    }, [navigationFollowIntent, back, replace])
 
     const toSource = useCallback(() => {
-        if (navigation.toSource("clear"))
+        if (navigationToSource("clear"))
             return
 
-        if (navigation.back())
+        if (back())
             return
-    
-        navigation.replace("/", { flag: "clear" })
-    }, [navigation])
+
+        replace("/", { flag: "clear" })
+    }, [navigationToSource, back, replace])
 
     const redirect = useCallback((route: NavigationPath) => {
-        navigation.replace(route, { flag: "keep" })
-    }, [navigation])
+        replace(route, { flag: "keep" })
+    }, [replace])
 
-    return { parameters: navigation.routeParameters as T, followIntent, toSource, redirect }
+    return { parameters: routeParameters as T, followIntent, toSource, redirect }
 }

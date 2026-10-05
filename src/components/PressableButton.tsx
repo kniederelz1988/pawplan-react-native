@@ -17,7 +17,7 @@ export default function PressableButton({ title, onPress }: Props) {
         style={[menuStyles.menuItem, hoverState && menuStyles.menuItemHover]}
         accessible
         accessibilityRole="button"
-        accessibilityLabel=""
+        accessibilityLabel={title}
         onHoverIn={() => setHoverState(true)}
         onHoverOut={() => setHoverState(false)}
         onPress={onPress}

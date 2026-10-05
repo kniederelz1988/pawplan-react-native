@@ -27,7 +27,7 @@ type DogDetailsCardProps = {
 }
 
 function DogDetailsCard({ dog }: DogDetailsCardProps) {
-    const navigation = useNavigation()
+    const { push } = useNavigation()
     const { cardStyles } = useResponsiveStyles()
 
     const { volunteer } = useVolunteer()
@@ -91,7 +91,7 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
                             title="Book appointment"
                             accessibilityLabel={`Book an appointment with ${dog.name}`}
                             onPress={() => {
-                                navigation.push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id ?? "" })
+                                push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id ?? "" })
                             }} />
                     </View>
                 </View>

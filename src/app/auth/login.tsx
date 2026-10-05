@@ -32,9 +32,9 @@ export default function LoginModal() {
 
     return (
         <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>
-            <Pressable style={dialogStyles.dialogContainer}>
+            <Pressable style={dialogStyles.dialogContainer} accessibilityViewIsModal>
                 <Divider>
-                    <Header1 accessibilityLabel="Login dialog">Login</Header1>
+                    <Header1>Log in</Header1>
                 </Divider>
 
                 <Space />

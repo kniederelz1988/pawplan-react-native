@@ -24,7 +24,7 @@ export default function DogSizeIcon({ size, style }: Props): ReactElement {
             accessibilityRole="image"
             accessibilityLabel={`${getSizeTitle(size)} dog`}
         >
-            <DogIcon size={`${Math.round(70 * iconSizes[size])}%`} color="#35423D" strokeWidth={2.25 * iconSizes[size]} />
+            <DogIcon accessible={false}  size={`${Math.round(70 * iconSizes[size])}%`} color="#35423D" strokeWidth={2.25 * iconSizes[size]} />
         </View>
     );
 }

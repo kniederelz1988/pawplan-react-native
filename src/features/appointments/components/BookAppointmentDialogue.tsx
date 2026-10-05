@@ -73,6 +73,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
         }
 
         try {
+            setSubmitError(null)
             setIsSubmitting(true)
 
             await createAppointment(appointment)
@@ -90,7 +91,6 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
             style={[dialogStyles.dialogContainer, layoutStyles.defaultColumnContainer]} 
             accessible
             accessibilityViewIsModal
-            importantForAccessibility="no-hide-descendants"
         >
             <Divider>
                 <Header1>Choose a date</Header1>
@@ -146,7 +146,6 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
             <Space />
             <Space />
             <Space />
-
 
             <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
                 <Button title="Cancel" color={"grey"} onPress={onClose} />

@@ -9,6 +9,7 @@ import PressableButton from "@/components/PressableButton";
 import Divider from "@/components/Divider";
 import { Header1 } from "@/components/Header";
 import Space from "@/components/Space";
+
 export default function MainMenu() {
     const { dialogStyles, menuStyles } = useResponsiveStyles()
 
@@ -23,8 +24,6 @@ export default function MainMenu() {
             onPress={back}
         >
             <Pressable style={[menuStyles.menuDialogue, menuStyles.menuContainer]}
-                accessible
-                accessibilityRole="alert"
                 importantForAccessibility="yes"
             >
 

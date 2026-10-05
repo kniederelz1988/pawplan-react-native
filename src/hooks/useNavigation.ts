@@ -1,14 +1,14 @@
 import { useCallback, useEffect } from "react"
-import { RoutePath, useRoute, useRouter } from "expo-router"
+import { RoutePath, useRouter } from "expo-router"
 import { useNavigationParameters } from "@/hooks/useNavigationParameters"
 
 export type Intent = "bookAppointment"
 
 type IntentFlag = "keep" | "new" | "clear"
 type IntentData =
-    { flag: "keep" } |
-    { flag: "new", data: Intent } |
-    { flag: "clear" }
+    { flag: "keep", data: Intent } |
+    { flag: "new",  data: Intent } |
+    { flag: "clear", }
 
 export type NavigationParams = Record<string, string | string[] | undefined>
 export type NavigationPath = RoutePath
@@ -19,9 +19,8 @@ const routes: Record<Intent, RoutePath> = {
 
 export default function useNavigation() {
     const router = useRouter()
-    const route = useRoute()
 
-    const { intentParameters, routeParameters } = useNavigationParameters()
+    const { intentParameters, routeParameters, routeName } = useNavigationParameters()
 
     const push = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
         switch (intent.flag) {
@@ -29,7 +28,7 @@ export default function useNavigation() {
                 router.push({ pathname: path, params: { source: intentParameters.intentSource, intent: intentParameters.intent, ...routeParameters, ...params } })
                 break
             case "new":
-                router.push({ pathname: path, params: { source: route.name, intent: intent.data, ...params } })
+                router.push({ pathname: path, params: { source: routeName, intent: intent.data, ...params } })
                 break
             case "clear":
                 router.push({ pathname: path, params: { ...routeParameters, ...params } })
@@ -37,14 +36,14 @@ export default function useNavigation() {
         }
 
         return true
-    }, [router, route, intentParameters, routeParameters])
+    }, [router, routeName, intentParameters, routeParameters])
     const replace = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
         switch (intent.flag) {
             case "keep":
                 router.replace({ pathname: path, params: { intent: intentParameters.intent, source: intentParameters.intentSource, ...routeParameters, ...params } })
                 break;
             case "new":
-                router.replace({ pathname: path, params: { source: route.name, intent: intent.data, ...params } })
+                router.replace({ pathname: path, params: { source: routeName, intent: intent.data, ...params } })
                 break
             case "clear":
                 router.replace({ pathname: path, params: { ...routeParameters, ...params } })
@@ -52,7 +51,7 @@ export default function useNavigation() {
         }
 
         return true
-    }, [router, route, intentParameters, routeParameters])
+    }, [router, routeName, intentParameters, routeParameters])
     const dismiss = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
         if (!router.canDismiss())
             return false
@@ -62,7 +61,7 @@ export default function useNavigation() {
                 router.dismissTo({ pathname: path, params: { intent: intentParameters.intent, source: intentParameters.intentSource, ...routeParameters, ...params } })
                 break;
             case "new":
-                router.dismissTo({ pathname: path, params: { source: route.name, intent: intent.data, ...params } })
+                router.dismissTo({ pathname: path, params: { source: routeName, intent: intent.data, ...params } })
                 break
             case "clear":
                 router.dismissTo({ pathname: path, params: { ...routeParameters, ...params } })
@@ -70,7 +69,7 @@ export default function useNavigation() {
         }
 
         return true
-    }, [router, route, intentParameters, routeParameters])
+    }, [router, routeName, intentParameters, routeParameters])
 
     const followIntent = useCallback((intentFlag: IntentFlag, params?: NavigationParams): boolean => {
         if (!intentParameters.intent)
@@ -107,10 +106,7 @@ export default function useNavigation() {
             return followIntent("keep")
     }, [router, intentParameters, toSource, followIntent])
 
-    useEffect(() => {
-        initIntent()
-        
-    }, [initIntent])
+    useEffect(() => { initIntent() }, [initIntent])
 
     return { routeParameters, followIntent, toSource, replace, push, back }
 }

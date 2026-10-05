@@ -31,9 +31,9 @@ export default function LogoutModal() {
 
     return (
         <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>
-            <Pressable style={dialogStyles.dialogContainer}>
+            <Pressable style={dialogStyles.dialogContainer} accessibilityViewIsModal>
                 <Divider>
-                    <Header1>LogOut</Header1>
+                    <Header1>Log out</Header1>
                 </Divider>
 
                 <Space />
