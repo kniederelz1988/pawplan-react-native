@@ -24,7 +24,7 @@ export function TimeButton({ time, isDisabled, isSelected, onSubmit }: TimeButto
             disabled={isDisabled}
             onPress={() => onSubmit(time)}
         >
-            <Text style={[buttonStyles.dateButtonContent, globalStyles.textMedium]}>
+            <Text style={[buttonStyles.dateButtonContent, globalStyles.textMedium]} accessible={false}>
                 {`${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}`}
             </Text>
         </Pressable>

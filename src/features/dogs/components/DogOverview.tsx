@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Button, Image, Pressable, Text, View } from "react-native";
+import { Button, Image, Text, View } from "react-native";
 
 import useNavigation from "@/hooks/useNavigation";
 

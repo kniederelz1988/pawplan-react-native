@@ -1,17 +1,22 @@
-import { useEffect } from "react"
-import { Pressable } from "react-native"
+import { useEffect, useCallback } from "react"
+import { Pressable, View, Button } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider"
 
-import LogOutDialogue from "@/features/auth/components/LogOutDialogue";
 import useNavigationIntent from "@/hooks/useNavigationIntent";
 
-export default function LogoutModal() {
-    const { dialogStyles } = useResponsiveStyles()
+import Divider from "@/components/Divider"
+import { Header1 } from "@/components/Header"
+import Space from "@/components/Space"
 
-    const { isLoggedIn } = useAuthContext()
+import colors from "@/styles/Colors"
+
+export default function LogoutModal() {
+    const { dialogStyles, layoutStyles } = useResponsiveStyles()
+
+    const { isLoggedIn, signOut } = useAuthContext()
 
     const { followIntent, toSource } = useNavigationIntent()
 
@@ -22,9 +27,25 @@ export default function LogoutModal() {
         followIntent()
     }, [isLoggedIn, followIntent])
 
+    const onLogOutPress = useCallback(() => { signOut() }, [signOut])
+
     return (
         <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>
-            <LogOutDialogue onClose={toSource} />
+            <Pressable style={dialogStyles.dialogContainer}>
+                <Divider>
+                    <Header1>LogOut</Header1>
+                </Divider>
+
+                <Space />
+
+                <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
+                    <Button title="Cancel" color={colors.secondaryButtonColor} onPress={toSource} />
+
+                    <Space />
+
+                    <Button title="LogOut" onPress={onLogOutPress} />
+                </View>
+            </Pressable>
         </Pressable>
     )
 }

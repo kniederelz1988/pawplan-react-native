@@ -23,10 +23,10 @@ export function DateButton({ date, isDisabled, isSelected, onSubmit }: DateButto
             accessibilityState={{ selected: isSelected, disabled: isDisabled }}
             onPress={() => onSubmit(date)}
         >
-            <Text style={[buttonStyles.dateButtonContent, globalStyles.textMedium]}>
+            <Text style={[buttonStyles.dateButtonContent, globalStyles.textMedium]} accessible={false}>
                 {`${String(date.day).padStart(2, "0")}.${String(date.month).padStart(2, "0")}`}
             </Text>
-            <Text style={[buttonStyles.dateButtonContent, globalStyles.textSmall]}>
+            <Text style={[buttonStyles.dateButtonContent, globalStyles.textSmall]} accessible={false}>
                 {date.year}
             </Text>
         </Pressable>

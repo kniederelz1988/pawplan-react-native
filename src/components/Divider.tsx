@@ -12,7 +12,7 @@ export default function Divider({ viewStyle, lineStyle, children } : Props) {
     const { globalStyles } = useResponsiveStyles()
     
     return (
-        <View style={[ viewStyle, globalStyles.dividerViewStyle]}>
+        <View accessible={false} style={[ viewStyle, globalStyles.dividerViewStyle]}>
             <View style={[ lineStyle, globalStyles.dividerLineStyle, globalStyles.dividerLineStyleStart ]} />
             <View>
                 {children}

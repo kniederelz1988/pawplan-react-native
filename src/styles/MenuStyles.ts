@@ -27,10 +27,10 @@ export const menuStylesCollection = StylesheetCollection.create({
 
     justifyContent: "center",
 
-    backgroundColor: "beige",
+    backgroundColor: "white",
   },
   menuItemHover: {
-    backgroundColor: "white"
+    fontWeight: "bold"
   },
 
   menuButton: {

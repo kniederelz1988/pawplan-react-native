@@ -3,7 +3,7 @@ import { useCallback } from "react"
 import useNavigation, { NavigationParams, NavigationPath } from "@/hooks/useNavigation"
 
 export default function useNavigationIntent<T extends NavigationParams>() {
-    const navigation  = useNavigation()
+    const navigation = useNavigation()
 
     const followIntent = useCallback(() => {
         if (navigation.followIntent("keep"))

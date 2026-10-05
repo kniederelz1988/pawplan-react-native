@@ -1,30 +1,25 @@
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
 import { Pressable, Text } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
-
-import { Menu } from "@/components/Menu";
+import useNavigation from "@/hooks/useNavigation";
 
 export default function HeaderMenu() {
     const { menuStyles } = useResponsiveStyles()
 
-    const [state, setState] = useState(false)
+    const { push } = useNavigation()
 
-    const onCloseCallback = useCallback(() => setState(false), [setState])
+    const openMenuCallback = useCallback(() => push("/menus/main", { flag: "clear" }), [push])
 
     return <>
         <Pressable
             style={menuStyles.menuButton}
             accessible
             accessibilityRole="button"
-            accessibilityLabel={state ? "Close menu" : "Open menu"}
-            accessibilityState={{ expanded: state }}
-            onPress={() => setState(true)} >
-            {
-                <Text accessible={false}>{state ? "X" : "⋮"}</Text>
-            }
+            accessibilityLabel="Open menu"
+            onPress={openMenuCallback} 
+        >
+            <Text accessible={false}>{"⋮"}</Text>
         </Pressable>
-
-        <Menu state={state} onClose={onCloseCallback} />
     </>
 }

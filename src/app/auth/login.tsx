@@ -1,29 +1,55 @@
-import { useEffect } from "react"
-import { Pressable } from "react-native"
-
-import LogInDialogue from "@/features/auth/components/LogInDialogue"
+import { useCallback, useEffect } from "react"
+import { Pressable, View, Button } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
-import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider"
 import useNavigationIntent from "@/hooks/useNavigationIntent";
+import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
+
+import Divider from "@/components/Divider"
+import { Header1 } from "@/components/Header"
+import Space from "@/components/Space"
+
+import colors from "@/styles/Colors"
 
 export default function LoginModal() {
-    const { dialogStyles } = useResponsiveStyles()
+    const { dialogStyles, layoutStyles } = useResponsiveStyles()
 
-    const { isLoggedIn } = useAuthContext()
+    const { isLoggedIn, signIn } = useAuthContext()
 
     const { followIntent, toSource } = useNavigationIntent()
 
     useEffect(() => {
         if (!isLoggedIn)
             return
-        
+
         followIntent()
     }, [isLoggedIn, followIntent])
 
+    const onLogInPress = useCallback(() => {
+        // THIS IS FOR STREAMLINING LOGIN FOR DEV PORPUSES
+        signIn("alexmorgan@pawplan.com", "morganalex")
+    }, [signIn])
+
     return (
         <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>
-            <LogInDialogue onClose={toSource} />
+            <Pressable style={dialogStyles.dialogContainer}>
+                <Divider>
+                    <Header1 accessibilityLabel="Login dialog">Login</Header1>
+                </Divider>
+
+                <Space />
+
+                <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
+                    <Button title="Cancel"
+                        accessibilityLabel="Close"
+                        color={colors.secondaryButtonColor}
+                        onPress={toSource} />
+
+                    <Space />
+
+                    <Button accessibilityLabel="Log in" title="Log in" color={colors.primaryButtonColor} onPress={onLogInPress} />
+                </View>
+            </Pressable>
         </Pressable>
     )
 }

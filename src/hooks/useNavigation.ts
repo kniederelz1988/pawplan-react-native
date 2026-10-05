@@ -76,9 +76,11 @@ export default function useNavigation() {
         if (!intentParameters.intent)
             return false
 
-        return replace(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
-    }, [intentParameters, replace])
+        if (intentParameters.intentInit)
+            return push(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
 
+        return replace(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
+    }, [intentParameters, push])
     const toSource = useCallback((intentFlag: IntentFlag, params?: NavigationParams): boolean => {
         if (!intentParameters.intent || !intentParameters.intentSource)
             return false
@@ -98,7 +100,7 @@ export default function useNavigation() {
     }, [router])
 
     const initIntent = useCallback(() => {
-        if (!router.canGoBack())
+        if (!router.canGoBack() && !intentParameters.intentInit)
             return toSource("keep", { intentInit: "true" })
 
         if (intentParameters.intent && intentParameters.intentInit)
@@ -106,12 +108,9 @@ export default function useNavigation() {
     }, [router, intentParameters, toSource, followIntent])
 
     useEffect(() => {
-        const timeout = setTimeout(initIntent, 100)
-
-        return () => clearTimeout(timeout)
+        initIntent()
+        
     }, [initIntent])
-
-
 
     return { routeParameters, followIntent, toSource, replace, push, back }
 }

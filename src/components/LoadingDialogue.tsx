@@ -1,7 +1,5 @@
 import { Text, View } from "react-native"
 
-import useResponsiveStyles from "@/hooks/useResponsiveStyles";
-
 export default function LoadingDialogue() {
     return (
         <View
@@ -9,7 +7,7 @@ export default function LoadingDialogue() {
             accessibilityLabel="Loading"
             accessibilityState={{ busy: true }}
         >
-            <Text>Loading...</Text>
+            <Text accessible={false}>Loading...</Text>
         </View>
     )
 }
