@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react"
 import { Pressable, View, Button } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
-import useNavigationIntent from "@/hooks/useNavigationIntent";
+import useNavigation from "@/hooks/useNavigation";
 import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
 
 import Divider from "@/components/Divider"
@@ -16,14 +16,14 @@ export default function LoginModal() {
 
     const { isLoggedIn, signIn } = useAuthContext()
 
-    const { followIntent, toSource } = useNavigationIntent()
+    const { toIntent, toSource } = useNavigation()
 
     useEffect(() => {
         if (!isLoggedIn)
             return
 
-        followIntent()
-    }, [isLoggedIn, followIntent])
+        toIntent()
+    }, [isLoggedIn, toIntent])
 
     const onLogInPress = useCallback(() => {
         // THIS IS FOR STREAMLINING LOGIN FOR DEV PORPUSES

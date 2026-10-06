@@ -20,7 +20,13 @@ export default function DogGenderIcon({ gender, style }: Props): ReactElement {
             accessibilityRole="image"
             accessibilityLabel={getGenderTitle(gender)}
         >
-            <Icon accessibilityElementsHidden size="70%" color="#35423D" strokeWidth={2.25} />
+            <Icon
+                aria-hidden={true}
+                focusable={false}
+                size="70%"
+                color="#35423D"
+                strokeWidth={2.25}
+            />
         </View>
     );
 }

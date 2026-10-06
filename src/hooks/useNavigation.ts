@@ -1,112 +1,97 @@
 import { useCallback, useEffect } from "react"
-import { RoutePath, useRouter } from "expo-router"
-import { useNavigationParameters } from "@/hooks/useNavigationParameters"
+import { RoutePath } from "expo-router"
 
-export type Intent = "bookAppointment"
+import useNavigationRouter from "@/hooks/useNavigationRouter"
+import { NavigationIntent, NavigationParams, useNavigationParameters } from "@/hooks/useNavigationParameters"
 
-type IntentFlag = "keep" | "new" | "clear"
-type IntentData =
-    { flag: "keep", data: Intent } |
-    { flag: "new",  data: Intent } |
-    { flag: "clear", }
+export type IntentOperation = "keep" | "new" | "clear"
 
-export type NavigationParams = Record<string, string | string[] | undefined>
-export type NavigationPath = RoutePath
+export type IntentData =
+    | { operation: "keep" }
+    | { operation: "new"; intent?: NavigationIntent }
+    | { operation: "clear" }
 
-const routes: Record<Intent, RoutePath> = {
-    "bookAppointment": "/appointments/book",
+export const Operations = {
+    Keep: ({ operation: "keep" }) as IntentData,
+    New: (intent: NavigationIntent): IntentData => ({
+        operation: "new",
+        intent: intent,
+    }),
+    Clear: ({ operation: "clear" }) as IntentData
 }
 
-export default function useNavigation() {
-    const router = useRouter()
+export default function useNavigation<T extends NavigationParams>() {
+    const { routerPush, routerReplace, routerDismiss, routerBack, routerHasNavigation } = useNavigationRouter()
 
-    const { intentParameters, routeParameters, routeName } = useNavigationParameters()
+    const { intentParameters, routeParameters, routePath } = useNavigationParameters()
 
-    const push = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
-        switch (intent.flag) {
+    const push = useCallback((path: RoutePath, flag: IntentData = Operations.Keep, params?: NavigationParams): boolean => {
+        switch (flag.operation) {
             case "keep":
-                router.push({ pathname: path, params: { source: intentParameters.intentSource, intent: intentParameters.intent, ...routeParameters, ...params } })
-                break
+                return routerPush(path, intentParameters.intent, intentParameters.intentSource, { ...routeParameters, ...params })
             case "new":
-                router.push({ pathname: path, params: { source: routeName, intent: intent.data, ...params } })
-                break
+                return routerPush(path, flag.intent, intentParameters.intentSource ?? routePath, params)
             case "clear":
-                router.push({ pathname: path, params: { ...routeParameters, ...params } })
-                break
+                return routerPush(path, undefined, undefined, params)
         }
-
-        return true
-    }, [router, routeName, intentParameters, routeParameters])
-    const replace = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
-        switch (intent.flag) {
+    }, [routerPush, routePath, intentParameters, routeParameters])
+    const replace = useCallback((path: RoutePath, flag: IntentData = Operations.Keep, params?: NavigationParams): boolean => {
+        switch (flag.operation) {
             case "keep":
-                router.replace({ pathname: path, params: { intent: intentParameters.intent, source: intentParameters.intentSource, ...routeParameters, ...params } })
-                break;
+                return routerReplace(path, intentParameters.intent, intentParameters.intentSource, { ...params, ...routeParameters })
             case "new":
-                router.replace({ pathname: path, params: { source: routeName, intent: intent.data, ...params } })
-                break
+                return routerReplace(path, flag.intent, intentParameters.intentSource ?? routePath, params)
             case "clear":
-                router.replace({ pathname: path, params: { ...routeParameters, ...params } })
-                break
+                return routerReplace(path, undefined, undefined, params)
         }
-
-        return true
-    }, [router, routeName, intentParameters, routeParameters])
-    const dismiss = useCallback((path: RoutePath, intent: IntentData, params?: NavigationParams): boolean => {
-        if (!router.canDismiss())
-            return false
-
-        switch (intent.flag) {
+    }, [routerReplace, routePath, intentParameters, routeParameters])
+    const dismiss = useCallback((path: RoutePath, flag: IntentData = Operations.Keep, params?: NavigationParams): boolean => {
+        switch (flag.operation) {
             case "keep":
-                router.dismissTo({ pathname: path, params: { intent: intentParameters.intent, source: intentParameters.intentSource, ...routeParameters, ...params } })
-                break;
+                return routerDismiss(path, intentParameters.intent, intentParameters.intentSource, { ...params, ...routeParameters })
             case "new":
-                router.dismissTo({ pathname: path, params: { source: routeName, intent: intent.data, ...params } })
-                break
+                return routerDismiss(path, flag.intent, intentParameters.intentSource ?? routePath, params)
             case "clear":
-                router.dismissTo({ pathname: path, params: { ...routeParameters, ...params } })
-                break
+                return routerDismiss(path, undefined, undefined, params)
         }
+    }, [routerDismiss, routePath, intentParameters, routeParameters])
 
-        return true
-    }, [router, routeName, intentParameters, routeParameters])
+    const back = useCallback(() => { return routerBack() }, [routerBack])
 
-    const followIntent = useCallback((intentFlag: IntentFlag, params?: NavigationParams): boolean => {
-        if (!intentParameters.intent)
-            return false
-
-        if (intentParameters.intentInit)
-            return push(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
-
-        return replace(routes[intentParameters.intent], { flag: intentFlag, data: intentParameters.intent }, params)
-    }, [intentParameters, push])
-    const toSource = useCallback((intentFlag: IntentFlag, params?: NavigationParams): boolean => {
-        if (!intentParameters.intent || !intentParameters.intentSource)
-            return false
-
-        if (dismiss(intentParameters.intentSource, { flag: intentFlag, data: intentParameters.intent }, params))
+    const reset = useCallback(() => {
+        if (back())
             return true
 
-        return replace(intentParameters.intentSource, { flag: intentFlag, data: intentParameters.intent }, params)
-    }, [intentParameters, dismiss, replace])
+        return replace("/", Operations.Clear)
+    }, [back, replace])
 
-    const back = useCallback((): boolean => {
-        if (!router.canGoBack())
-            return false
+    const toIntent = useCallback(() => {
+        if (!intentParameters.intent)
+            return reset()
 
-        router.back()
-        return true
-    }, [router])
+        return replace(intentParameters.intent, Operations.Keep)
+    }, [reset, replace, intentParameters])
+    const toSource = useCallback(() => {
+        if (!intentParameters.intentSource)
+            return reset()
+
+        if (dismiss(intentParameters.intentSource, Operations.Clear))
+            return true
+
+        return replace(intentParameters.intentSource, Operations.Clear)
+    }, [reset, dismiss, replace, intentParameters])
 
     const initIntent = useCallback(() => {
-        if (!router.canGoBack() && !intentParameters.intentInit)
-            return toSource("keep", { intentInit: "true" })
+        if (routerHasNavigation || !intentParameters.intentSource || !intentParameters.intent)
+            return
 
-        if (intentParameters.intent && intentParameters.intentInit)
-            return followIntent("keep")
-    }, [router, intentParameters, toSource, followIntent])
+        if (!intentParameters.intentInit)
+            return replace(intentParameters.intentSource, Operations.Keep, { intentInit: "true" })
+
+        return push(intentParameters.intent, Operations.Keep)
+    }, [replace, push, routerHasNavigation, intentParameters])
 
     useEffect(() => { initIntent() }, [initIntent])
 
-    return { routeParameters, followIntent, toSource, replace, push, back }
+    return { parameters: routeParameters as T, push, replace, dismiss, back, toIntent, toSource }
 }

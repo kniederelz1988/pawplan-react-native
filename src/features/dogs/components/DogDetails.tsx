@@ -1,8 +1,6 @@
 import { useEffect } from "react"
 import { Text, View, Button, Image } from "react-native"
 
-import useNavigation from "@/hooks/useNavigation"
-
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
 
 import { Dog } from "@/domain/Dog"
@@ -20,6 +18,7 @@ import Space from "@/components/Space"
 import Divider from "@/components/Divider"
 import { ListView } from "@/components/ListView"
 
+import useNavigation, { Operations } from "@/hooks/useNavigation"
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 type DogDetailsCardProps = {
@@ -91,7 +90,7 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
                             title="Book appointment"
                             accessibilityLabel={`Book an appointment with ${dog.name}`}
                             onPress={() => {
-                                push("/appointments/book", { flag: "new", data: "bookAppointment" }, { dogId: dog.id ?? "" })
+                                push("/appointments/book", Operations.New("/appointments/book"), { dogId: dog.id ?? "" })
                             }} />
                     </View>
                 </View>
@@ -111,7 +110,7 @@ export default function DogDetails({ dog }: DogDetailsProps) {
 
     useEffect(() => {
         ratingsFilter(dog)
-    }, [dog, ratingsFilter])
+    }, [ratingsFilter, dog])
 
     return (
         <View style={[globalStyles.contentContainer, layoutStyles.listContainer, layoutStyles.gapLarge, layoutStyles.defaultColumnContainer, layoutStyles.mediumRowContainer, layoutStyles.largeRowContainer]}>

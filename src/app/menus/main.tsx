@@ -35,20 +35,20 @@ export default function MainMenu() {
 
                 <PressableButton
                         title="Home"
-                        onPress={() => { push("/", { flag: "clear" }) }}
+                        onPress={() => { push("/") }}
                     />
 
                 {!isLoggedIn && (
                     <PressableButton
                         title="Log in"
-                        onPress={() => { push("/auth/login", { flag: "clear" }) }}
+                        onPress={() => { push("/auth/login") }}
                     />
                 )}
 
                 {isLoggedIn && (
                     <PressableButton
                         title="Sign out"
-                        onPress={() => { push("/auth/logout", { flag: "clear" }) }}
+                        onPress={() => { push("/auth/logout") }}
                     />
                 )}
 

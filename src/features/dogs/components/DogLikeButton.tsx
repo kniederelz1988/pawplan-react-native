@@ -28,7 +28,9 @@ export default function DogLikeButton({ data, style }: Props) {
             onPress={() => toggleFavourite(data)}
         >
 
-            <Heart size="70%"
+            <Heart 
+                aria-hidden={true}
+                focusable={false}size="70%"
                 fill={isFavourite(data) ? "red" : "transparent"}
                 color={isFavourite(data) ? "red" : "#35423D"}
                 strokeWidth={2.25}

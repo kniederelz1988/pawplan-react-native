@@ -5,7 +5,7 @@ import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider"
 
-import useNavigationIntent from "@/hooks/useNavigationIntent";
+import useNavigation from "@/hooks/useNavigation";
 
 import Divider from "@/components/Divider"
 import { Header1 } from "@/components/Header"
@@ -18,14 +18,14 @@ export default function LogoutModal() {
 
     const { isLoggedIn, signOut } = useAuthContext()
 
-    const { followIntent, toSource } = useNavigationIntent()
+    const { toIntent, toSource } = useNavigation()
 
     useEffect(() => {
         if (isLoggedIn)
             return
 
-        followIntent()
-    }, [isLoggedIn, followIntent])
+        toIntent()
+    }, [isLoggedIn, toIntent])
 
     const onLogOutPress = useCallback(() => { signOut() }, [signOut])
 

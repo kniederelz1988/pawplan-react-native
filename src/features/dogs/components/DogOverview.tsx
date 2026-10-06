@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 import { Button, Image, Text, View } from "react-native";
 
-import useNavigation from "@/hooks/useNavigation";
+import useNavigation, { Operations } from "@/hooks/useNavigation";
 
 import { Dog } from "@/domain/Dog";
 import { getDogAge } from "@/domain/utils/DogHelpers";
-import useDogsCollection from "@/shared/repositories/hooks/DogHooks";
 
 import DogLikeButton from "@/features/dogs/components/DogLikeButton";
 import DogGenderIcon from "@/features/dogs/components/DogGenderIcon";
 import DogSizeIcon from "@/features/dogs/components/DogSizeIcon";
 
+import useDogsCollection from "@/shared/repositories/hooks/DogHooks";
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks";
 
 import { Header2, SubHeader2 } from "@/components/Header";
@@ -91,7 +91,7 @@ export function DogCard({ dog }: DogCardProps) {
                                 if (!dog?.id)
                                     return
                                 
-                                push("/dogs/details", { flag: "clear" }, { dogId: dog.id })
+                                push("/dogs/details", Operations.Clear, { dogId: dog.id })
                             }} />
                     </View>
                 </View>

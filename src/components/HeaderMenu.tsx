@@ -2,14 +2,14 @@ import { useCallback } from "react"
 import { Pressable, Text } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
-import useNavigation from "@/hooks/useNavigation";
+import useNavigation, { Operations } from "@/hooks/useNavigation";
 
 export default function HeaderMenu() {
     const { menuStyles } = useResponsiveStyles()
 
     const { push } = useNavigation()
 
-    const openMenuCallback = useCallback(() => push("/menus/main", { flag: "clear" }), [push])
+    const openMenuCallback = useCallback(() => push("/menus/main", Operations.Clear), [push])
 
     return <>
         <Pressable

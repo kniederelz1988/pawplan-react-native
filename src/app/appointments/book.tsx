@@ -5,12 +5,14 @@ import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 import BookAppointmentDialogue from "@/features/appointments/components/BookAppointmentDialogue";
 import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
-import useNavigationIntent from "@/hooks/useNavigationIntent";
+import useNavigation, { Operations } from "@/hooks/useNavigation";
+
+type Params = { dogId: string }
 
 export default function BookAppointmentsModal() {
     const { dialogStyles } = useResponsiveStyles()
     
-    const { parameters, redirect, toSource } = useNavigationIntent<{ dogId: string }>()
+    const { replace, toSource, parameters } = useNavigation<Params>()
 
     const { isLoggedIn } = useAuthContext()
 
@@ -18,8 +20,8 @@ export default function BookAppointmentsModal() {
         if (isLoggedIn)
             return
 
-        redirect("/auth/login")
-    }, [isLoggedIn, redirect])
+        replace("/auth/login", Operations.Keep)
+    }, [isLoggedIn, replace])
 
     return (
         <Pressable style={dialogStyles.dialogBackdrop} onPress={toSource}>
