@@ -29,7 +29,7 @@ export const globalStyleCollection = StylesheetCollection.create({
   },
   subHeader1: {
     fontFamily: "sans-serif",
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "regular",
 
     textTransform: "capitalize"
@@ -42,20 +42,20 @@ export const globalStyleCollection = StylesheetCollection.create({
   },
   subHeader2: {
     fontFamily: "sans-serif",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "regular",
 
     textTransform: "capitalize"
   },
 
   textSmall: {
-    fontSize: 10
-  },
-  textMedium: {
     fontSize: 12
   },
-  textLarge: {
+  textMedium: {
     fontSize: 14
+  },
+  textLarge: {
+    fontSize: 16
   },
 
   dividerViewStyle: {
