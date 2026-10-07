@@ -8,6 +8,8 @@ The current vertical slice covers the path from browsing dogs to viewing details
 
 > **Project status:** This is an early migration prototype under active development. It is not a production release or a complete replacement for the existing PawPlan applications.
 
+**Live demo:** https://pawplan-reactnative.vercel.app/dogs/overview
+
 ## What this prototype demonstrates
 
 The current implementation focuses on a small but complete workflow:
