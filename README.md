@@ -2,28 +2,47 @@
 
 PawPlan is a volunteer-coordination platform for animal shelters.
 
-It is designed to help shelters coordinate dog-walking appointments while giving volunteers a simple way to book walks and interact with the shelter before, during and after an appointment.
+This repository contains a focused **React Native and TypeScript migration prototype** that explores how selected PawPlan mobile workflows can be implemented as a shared application for **Android and iOS**.
 
-This repository contains an initial **React Native and TypeScript prototype** exploring how selected PawPlan workflows can be implemented as a shared application for **Android and iOS**.
+The current vertical slice covers the path from browsing dogs to viewing details and booking a walking appointment, including authentication redirects, cancellation and returning to the originating dog.
 
-> **Project status:** This is an early migration prototype under active development. It is not yet a production release or a complete replacement for the existing PawPlan applications.
+> **Project status:** This is an early migration prototype under active development. It is not a production release or a complete replacement for the existing PawPlan applications.
 
-## Prototype goals
+## What this prototype demonstrates
 
-The initial prototype focuses on porting one complete workflow from the existing PawPlan applications:
+The current implementation focuses on a small but complete workflow:
 
-* Browse available dogs and walking appointments
+* Browse available dogs
 * View information about an individual dog
-* Navigate between overview and detail screens
-* Interact with appointment-related state
-* Handle loading, empty and error states
-* Provide accessible interactions on Android and iOS
+* Mark dogs as favourites
+* Start an appointment booking from the dog details screen
+* Redirect unauthenticated users through login and resume the original booking intent
+* Select a date and time and submit an appointment request
+* Cancel booking or authentication and return to the originating dog
+* Preserve route parameters across modal navigation
+* Handle loading, empty, error, disabled and submitting states
+* Expose important interactions through accessible roles, labels and state
+* Test components, repository integration and Expo Router flows
 
-The scope is intentionally limited. The objective is to establish a maintainable React Native foundation and evaluate the architectural and user-experience implications of sharing functionality across the two mobile platforms.
+The scope is intentionally limited. The objective is to establish a maintainable React Native foundation and evaluate the architectural, accessibility and user-experience implications of sharing functionality across Android and iOS.
+
+## Screenshots
+
+### Dog overview
+
+![Dog overview](docs/images/dog-overview.png)
+
+### Dog details
+
+![Dog details](docs/images/dog-details.png)
+
+### Appointment booking
+
+![Appointment booking](docs/images/appointment-booking.png)
 
 ## Why React Native?
 
-PawPlan currently includes separate implementations built with React/TypeScript, Kotlin/Android and Swift/SwiftUI.
+PawPlan already includes separate implementations built with React/TypeScript, Kotlin/Android and Swift/SwiftUI.
 
 The React Native prototype explores:
 
@@ -33,44 +52,57 @@ The React Native prototype explores:
 * Adapting web-oriented components and interaction patterns to native mobile conventions
 * Supporting platform-specific behaviour where a shared implementation is not appropriate
 * Maintaining accessibility across both mobile platforms
+* Keeping data access replaceable through repository abstractions
 
 The intention is not to make the platforms artificially identical. Shared code should be used where it improves maintainability without compromising native behaviour or the user experience.
 
-## Planned initial workflow
+## Implemented workflow
 
 ### Dog overview
 
-Volunteers can browse dogs and available walking opportunities.
+Volunteers can browse the available dogs.
 
-The overview is intended to demonstrate:
+The overview demonstrates:
 
-* Efficient list rendering
 * Reusable React Native components
 * Typed component properties and domain models
-* Loading, empty and error states
-* Accessible touch interactions
+* Repository-backed data
+* Responsive list layouts
+* Accessible images and actions
+* Favourite state for authenticated volunteers
 
 ### Dog details
 
-Volunteers can open a detail view containing relevant information about an individual dog and the available appointment options.
+The detail screen contains information about an individual dog and exposes the appointment action.
 
-This part of the prototype explores:
+This part of the prototype demonstrates:
 
-* Cross-screen navigation
-* Passing typed application data between screens
+* Cross-screen navigation with Expo Router
+* Route parameter handling
 * Reusable presentation components
 * Clear information hierarchy
-* Screen-reader-compatible content
+* Screen-reader-compatible headings, images and controls
+* Repository-backed ratings
 
-### Appointment interaction
+### Appointment booking
 
-A limited appointment interaction will connect the overview and detail screens to application state.
+The appointment flow connects dog details, authentication and booking through a route intent.
 
-The first implementation is intended to remain deliberately small while establishing patterns that can later support booking, cancellation and appointment-status workflows.
+The current implementation supports:
+
+* Starting a booking for a specific dog
+* Redirecting unauthenticated users to login
+* Returning to the pending booking after authentication
+* Preserving the selected dog across the redirect
+* Selecting a date and time
+* Disabled and submitting states
+* Accessible error feedback
+* Returning to the originating dog after submission
+* Returning to the originating dog when booking or login is cancelled
 
 ## Technologies
 
-The prototype is being developed with:
+The prototype uses:
 
 * **React Native**
 * **TypeScript**
@@ -79,20 +111,24 @@ The prototype is being developed with:
 * **React Native StyleSheet**
 * **Jest**
 * **React Native Testing Library**
+* **Firebase / Firestore repository implementations**
 * **Git**
 
-Additional technologies will only be introduced where they solve a concrete application requirement.
+Mock repositories are used as the default data source while the architecture is being validated. Firebase-backed repository implementations are being developed behind the same interfaces.
 
 ## Architecture
 
-The prototype follows a separation between UI, domain models and data access.
+The prototype separates presentation, domain models, navigation and data access.
 
-The initial structure is organized around:
+Key ideas include:
 
-* Screen components for complete user workflows
+* Screen and feature components for user workflows
 * Reusable UI components
 * Typed domain models
-* Repository abstractions for data access
+* Repository interfaces independent of Firebase
+* Dependency injection through React context
+* Mock and Firebase repository implementations behind the same contracts
+* Navigation helpers around Expo Router
 * Explicit loading, success, empty and error states
 * Testable application logic
 
@@ -100,50 +136,69 @@ A simplified project structure:
 
 ```text
 src/
-  components/
-  features/
+  app/            Expo Router screens and modal routes
+  components/     Reusable UI components
+  domain/         Domain models, enums and utilities
+  features/       Feature-specific presentation
     dogs/
     appointments/
-  models/
-  repositories/
+  hooks/          Navigation and responsive-layout hooks
+  mock/           Mock repository implementations
+  services/       Firebase and toast integrations
+  shared/         Repository contracts, providers and shared application logic
+
+__tests__/
+  components/
+  features/
+  navigation/
 ```
 
-The initial implementation can use local or mock data behind a repository interface. This allows the UI and application architecture to be developed independently before connecting the prototype to Firebase/Firestore.
+The UI depends on repository abstractions rather than Firebase directly. This allows the same workflows to be exercised against predictable mock data in development and tests while keeping Firebase integration replaceable.
 
 ## Accessibility
 
-Accessibility is part of the prototype from the beginning rather than a later addition.
+Accessibility is treated as part of the implementation rather than a later addition.
 
-The project considers:
+The current prototype includes:
 
-* Meaningful accessibility labels, roles and hints
-* Logical screen-reader navigation
-* Accessible headings and content structure
+* Meaningful accessibility labels and roles
+* Accessible heading structure
 * Descriptive image alternatives
-* Sufficient touch-target sizes
-* Announcements for relevant dynamic state changes
-* Testing with VoiceOver on iOS and TalkBack on Android
-* Platform-specific accessibility behaviour where necessary
+* Selected, disabled and busy accessibility state
+* Decorative icons hidden from the accessibility tree
+* Modal accessibility semantics
+* Accessible error feedback and live regions
+* Controls that can be queried in tests through their accessible names
 
-This work builds on the accessibility improvements made to the PawPlan React web application, including semantic structure, keyboard navigation, accessible form handling and screen-reader support.
+Manual VoiceOver and TalkBack validation remains part of the ongoing accessibility pass.
+
+This work builds on accessibility improvements made to the PawPlan React web application, including semantic structure, keyboard navigation, accessible form handling and screen-reader support.
 
 ## Testing
 
-The prototype uses **Jest** and **React Native Testing Library** for component and interaction testing.
+The prototype uses **Jest**, **React Native Testing Library** and **Expo Router testing utilities**.
 
-The initial test coverage is intended to include:
+Current tests cover:
 
-* Rendering repository results
-* Displaying loading, empty and error states
-* Navigating from an overview item to its detail screen
-* Triggering an appointment-related interaction
-* Querying important controls through their accessible roles and labels
+* Date and time selection controls
+* Selected and disabled accessibility state
+* Favourite-button behaviour and accessible state
+* Dog-card navigation
+* Repository-to-hook-to-UI integration in the dog overview
+* Appointment-dialog interaction and error behaviour
+* Authentication redirects during booking
+* Preservation of the selected dog across authentication
+* Successful booking returning to the originating dog details screen
+* Booking cancellation returning to the originating dog
+* Login cancellation returning to the originating dog
 
-End-to-end testing and store-distribution workflows are outside the scope of the initial prototype.
+The tests intentionally focus on user-observable behaviour and accessible roles and labels rather than component implementation details.
+
+End-to-end device testing and store-distribution workflows are outside the scope of this initial prototype.
 
 ## Running the project
 
-Install the dependencies:
+Install dependencies:
 
 ```bash
 npm install
@@ -159,11 +214,18 @@ The application can then be opened using:
 
 * An Android emulator
 * An iOS simulator
-* A physical device with Expo Go
+* A compatible physical development device
+
+Run the automated checks with:
+
+```bash
+npm test
+npm run lint
+```
 
 ## Broader PawPlan platform
 
-PawPlan is being developed as a multi-platform product rather than as several identical applications. Each existing implementation currently has a different focus.
+PawPlan is being developed as a multi-platform product rather than as several identical applications. Each existing implementation has a different focus.
 
 ### React web application
 
@@ -186,7 +248,7 @@ The Kotlin application focuses on the volunteer experience before and during a w
 
 ### iOS prototype
 
-The Swift and SwiftUI application was the first mobile implementation and serves as an initial prototype of PawPlan’s core appointment workflows.
+The Swift and SwiftUI application was the first mobile implementation and serves as an initial prototype of PawPlan's core appointment workflows.
 
 ### React Native prototype
 
@@ -207,11 +269,11 @@ This repository represents a focused technical prototype.
 It does not currently claim:
 
 * Feature parity with the native Android application
-* Complete Firebase/Firestore integration
+* Complete production-ready Firebase/Firestore integration
 * Production-ready authentication
 * Background location tracking
 * Push-notification support
 * App Store or Google Play distribution
-* Production-scale React Native experience
+* Production React Native experience
 
-These areas may be evaluated incrementally after the initial cross-platform workflow and architecture have been validated.
+These areas can be evaluated incrementally after the initial cross-platform workflow and architecture have been validated.
