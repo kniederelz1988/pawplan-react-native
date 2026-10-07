@@ -15,14 +15,13 @@ export default function DogDetailsPage() {
     const { dogs } = useDogsCollection([dogId])
     const dog = useMemo(() => { return dogs.at(0) ?? null }, [dogs])
 
-    if (!dog) {
+    if (!dog)
         return null
-    }
 
     return (
         <>
             <Stack.Title>{dog.name}</Stack.Title>
-            
+
             <ScrollView style={globalStyles.app} contentContainerStyle={globalStyles.appContentContainer} >
                 <DogDetails dog={dog} />
             </ScrollView >

@@ -11,7 +11,7 @@ type Params = { dogId: string }
 
 export default function BookAppointmentsModal() {
     const { dialogStyles } = useResponsiveStyles()
-    
+
     const { replace, toSource, parameters } = useNavigation<Params>()
 
     const { isLoggedIn } = useAuthContext()

@@ -14,7 +14,7 @@ export default function MainMenu() {
     const { dialogStyles, menuStyles } = useResponsiveStyles()
 
     const { isLoggedIn } = useAuthContext()
-    const { push, back } = useNavigation()
+    const { replace, back } = useNavigation()
 
     return (
         <Pressable style={[dialogStyles.dialogBackdrop]}
@@ -35,20 +35,20 @@ export default function MainMenu() {
 
                 <PressableButton
                         title="Home"
-                        onPress={() => { push("/") }}
+                        onPress={() => { replace("/") }}
                     />
 
                 {!isLoggedIn && (
                     <PressableButton
                         title="Log in"
-                        onPress={() => { push("/auth/login") }}
+                        onPress={() => { replace("/auth/login") }}
                     />
                 )}
 
                 {isLoggedIn && (
                     <PressableButton
                         title="Sign out"
-                        onPress={() => { push("/auth/logout") }}
+                        onPress={() => { replace("/auth/logout") }}
                     />
                 )}
 

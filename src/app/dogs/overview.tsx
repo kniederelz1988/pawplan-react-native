@@ -5,7 +5,7 @@ import DogOverview from "@/features/dogs/components/DogOverview";
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 import { Stack } from "expo-router";
 
-export default function DogIndexPage() {
+export default function DogOverviewPage() {
     const { globalStyles } = useResponsiveStyles()
 
     return (

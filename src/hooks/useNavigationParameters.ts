@@ -1,38 +1,32 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
-import { RoutePath, useRoute } from "expo-router";
-import { RouteProp } from "expo-router/build/react-navigation";
+import { RoutePath, useGlobalSearchParams, useRoute } from "expo-router";
 
 export type NavigationIntent = RoutePath
 export type NavigationIntentSource = RoutePath
 
-export type NavigationParams = Record<string, string | string[] | undefined>
+export type NavigationParams = Record<string, string | string[]>
+export type IntentNavigationParams = {
+  intent: NavigationIntent,
+  intentInit: boolean,
+  intentSource: NavigationIntent
+}
 
-type Route = RouteProp<{
-  root: {
-    intent?: NavigationIntent,
-    intentInit?: string
+export function useNavigationParameters() {
+  const params = useGlobalSearchParams<NavigationParams>()
+  const route = useRoute()
 
-    source: NavigationIntentSource
-  }
-}>;
+  const intent = params?.intent as NavigationIntent
+  const intentInit = params?.intentInit === "true"
+  const intentSource = params?.source as NavigationIntent
 
-export function useNavigationParameters<T extends NavigationParams>() {
-  const route = useRoute<Route>()
+  const intentParameters = useMemo<IntentNavigationParams>(() => {
+    return { intent: intent, intentInit: intentInit, intentSource: intentSource }
+  }, [intent, intentInit, intentSource])
 
-  const intent = route.params ? route.params.intent as NavigationIntent : undefined
-  const intentInit = route.params ? route.params.intentInit === "true" : false
-  const intentSource = route.params ? route.params.source as NavigationIntent : undefined
+  const routeParameters = useMemo<NavigationParams>(() => {
+    return (({ intent, source, intentInit, ...rest }) => (rest))(params)
+  }, [params])
 
-  const path = route.name as RoutePath 
-
-  const routeParameters = useMemo<T>(() => {
-    if (!route.params)
-      return {} as T
-
-    return (({ intent, source, intentInit, ...rest }) => rest as T)(route.params)
-  }, [route.params])
-  useEffect(() => console.log( routeParameters ), [routeParameters])
-
-  return { intentParameters: { intent, intentInit, intentSource }, routeParameters, routePath: path }
+  return { intentParameters, routeParameters, routePath: route.name as RoutePath }
 }

@@ -9,7 +9,7 @@ export default function HeaderMenu() {
 
     const { push } = useNavigation()
 
-    const openMenuCallback = useCallback(() => push("/menus/main", Operations.Clear), [push])
+    const openMenuCallback = useCallback(() => push("/menus/main", Operations.New("/menus/main")), [push])
 
     return <>
         <Pressable

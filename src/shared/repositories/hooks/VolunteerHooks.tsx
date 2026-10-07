@@ -105,11 +105,8 @@ export function useVolunteer() {
     }, [volunteer, isFavourite, volunteerLikesRepository])
 
     useEffect(() => {
-        if (!isLoggedIn || !user?.userId) {
-            return
-        }
-
-        return volunteerRepository.subscribeForVolunteerByUserId(user?.userId, (t) => {
+        const userId = (isLoggedIn && user) ? user.userId : ""
+        return volunteerRepository.subscribeForVolunteerByUserId(userId, (t) => {
             if (!t.length) {
                 setVolunteer(null)
                 return
@@ -117,13 +114,11 @@ export function useVolunteer() {
 
             setVolunteer(t[0])
         })
-    }, [isLoggedIn, user?.userId, volunteerRepository])
+    }, [isLoggedIn, user, volunteerRepository, setVolunteer])
 
     useEffect(() => {
-        if (!volunteer?.id)
-            return
-
-        return volunteerLikesRepository.subscribeForVolunteerLikes(volunteer.id, (m) => setLikedDogs(m.map(m => m.dogId)))
+        const volunteerId = volunteer?.id ? volunteer.id : ""
+        return volunteerLikesRepository.subscribeForVolunteerLikes(volunteerId, (m) => setLikedDogs(m.map(m => m.dogId)))
     }, [volunteer, volunteerLikesRepository])
 
     const likeCounter = useMemo(() => likedDogs.length, [likedDogs])

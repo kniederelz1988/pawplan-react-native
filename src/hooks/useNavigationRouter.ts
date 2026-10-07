@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { RoutePath, useRouter } from "expo-router"
 import { NavigationIntent, NavigationIntentSource, NavigationParams } from "./useNavigationParameters"
 
@@ -28,7 +28,7 @@ export default function useNavigationRouter() {
         return true
     }, [canGoBack, back])
 
-    const routerHasNavigation = useMemo(() => canGoBack(), [canGoBack])
+    const routerHasNavigation = useCallback(() => (canGoBack() || canDismiss()), [canGoBack, canDismiss])
 
     return { routerPush, routerReplace, routerDismiss, routerBack, routerHasNavigation }
 }
