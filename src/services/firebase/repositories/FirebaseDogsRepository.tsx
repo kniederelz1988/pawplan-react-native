@@ -10,9 +10,10 @@ import { FirebaseDogDTO } from "@/services/firebase/models/FirebaseDogDTO";
 import DogRepository, { DogRepositoryListener } from "@/shared/repositories/DogRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
-import { getRepositoryOperationErrorMessage, getRepositoryOperationUndefinedDataMessage } from "@/shared/repositories/utils/RepositoryOperationError";
+import { getErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError";
 
 import { dateValueToTimestamp, timestampToDateValue } from "../utils/FirebaseExtensions";
+import { getFirestoreErrorMessage } from "@/services/firebase/FirebaseErrorHelpers";
 
 const dogConverter: FirestoreDataConverter<Dog, FirebaseDogDTO> = {
 
@@ -105,16 +106,14 @@ export default function FirebaseDogRepository(): DogRepository {
 
     async function createDog(dog: Dog, operationCallback: RepositoryOperationCallback) {
         if (dog.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
         try {
             await addDoc(collection(firestore, collectionName), dog)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
@@ -122,8 +121,7 @@ export default function FirebaseDogRepository(): DogRepository {
     }
     async function updateDog(dog: Dog, operationCallback: RepositoryOperationCallback) {
         if (!dog?.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -131,8 +129,7 @@ export default function FirebaseDogRepository(): DogRepository {
             const d = doc(collection(firestore, "dogs"), dog.id)
             await updateDoc(d, dog)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 

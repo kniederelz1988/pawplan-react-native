@@ -1,14 +1,23 @@
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 export function usePages<T>() {
     const [page, setPage] = useState(0)
     const [pageCursors, setPageCursors] = useState<T[]>([])
 
-    function setPageCursor(pageCursor: T) {
-        const p = [...pageCursors.slice(0, page), pageCursor, ...pageCursors.slice(page + 1)]
-        setPageCursors(p)
-    }
-    function getPageCursor() {
+    const setPageCursor = useCallback((nextCursor: T) => {
+        setPageCursors((currentCursors) => {
+            if (Object.is(currentCursors[page], nextCursor))
+                return currentCursors
+
+            return [
+                ...currentCursors.slice(0, page),
+                nextCursor,
+                ...currentCursors.slice(page + 1)
+            ]
+        })
+    }, [page])
+
+    const getPageCursor = useCallback(() => {
         if (page <= 0)
             return null
 
@@ -16,27 +25,39 @@ export function usePages<T>() {
             return pageCursors[pageCursors.length - 1]
 
         return pageCursors[page - 1]
-    }
+    }, [page, pageCursors])
 
-    function previousPage() {
+    const previousPage = useCallback(() => {
         if (page === 0)
             return
 
         setPage(page - 1)
-    }
-    const previousPageActive = useMemo(() => page >= 1, [page])
+    }, [page])
+    const previousPageActive = page >= 1
     
-    function nextPage() {
+    const nextPage = useCallback(() => {
         if (page >= pageCursors.length)
             return
         
         setPage(page + 1)
-    }
-    const nextPageActive = useMemo(() => page < pageCursors.length, [page, pageCursors])
+    }, [page, pageCursors.length])
+    const nextPageActive = page < pageCursors.length
+
+    const pageControls = useMemo(() => ({
+        previousPage,
+        previousPageActive,
+        nextPage,
+        nextPageActive
+    }), [previousPage, previousPageActive, nextPage, nextPageActive])
+
+    const pageCursor = useMemo(() => ({
+        set: setPageCursor,
+        get: getPageCursor
+    }), [setPageCursor, getPageCursor])
 
     return { 
         page:           page,
-        pageControls:   { previousPage, previousPageActive, nextPage, nextPageActive },
-        pageCursor:     { set: setPageCursor, get: getPageCursor }
+        pageControls,
+        pageCursor
     }
 }

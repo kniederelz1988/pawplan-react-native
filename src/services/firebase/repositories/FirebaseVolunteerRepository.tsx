@@ -12,8 +12,9 @@ import { FirebaseVolunteerRoleDTO } from "@/services/firebase/models/FirebaseVol
 import VolunteerRepository, { VolunteerRepositoryListener, VolunteerRoleRepositoryListener } from "@/shared/repositories/VolunteerRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
-import { getRepositoryOperationErrorMessage, getRepositoryOperationUndefinedDataMessage } from "@/shared/repositories/utils/RepositoryOperationError";
+import { getErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError";
 import { dateValueToTimestamp, timestampToDateValue } from "@/services/firebase/utils/FirebaseExtensions";
+import { getFirestoreErrorMessage } from "@/services/firebase/FirebaseErrorHelpers";
 
 const volunteerConverter: FirestoreDataConverter<Volunteer, FirebaseVolunteerDTO> = {
     toFirestore: (data: Volunteer) => {
@@ -130,8 +131,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
 
     async function createVolunteer(volunteer: Volunteer, operationCallback: RepositoryOperationCallback) {
         if (volunteer.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
             
@@ -141,8 +141,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
             const t = await addDoc(collection(firestore, collectionName), volunteer)
             await setDoc(doc(collection(firestore, roleCollectionName), t.id), role)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
@@ -150,16 +149,14 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
     }
     async function updateVolunteer(volunteer: Volunteer, operationCallback: RepositoryOperationCallback) {
         if (!volunteer?.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
         try {
             await updateDoc(doc(collection(firestore, collectionName), volunteer.id), volunteer)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
@@ -167,8 +164,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
     }
     async function updateVolunteerRole(volunteer: Volunteer, role: VolunteerRole, operationCallback: RepositoryOperationCallback) {
         if (!volunteer?.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -176,8 +172,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
             const t = { role: role }
             await updateDoc(doc(collection(firestore, roleCollectionName), volunteer.id), t)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
@@ -186,8 +181,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
 
     async function deleteVolunteer(volunteer: Volunteer, operationCallback: RepositoryOperationCallback) {
         if (!volunteer?.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
         
@@ -195,8 +189,7 @@ export default function FirebaseVolunteerRepository(): VolunteerRepository {
             await deleteDoc(doc(collection(firestore, collectionName), volunteer.id))
             await deleteDoc(doc(collection(firestore, roleCollectionName), volunteer.id))
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 

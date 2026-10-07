@@ -8,7 +8,6 @@ import { Appointment } from "@/domain/Appointment"
 
 import { useAppointmentRepository } from "@/shared/repositories/hooks/AppointmentHooks"
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
-import { getRepositoryOperationErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError"
 
 import Divider from "@/components/Divider"
 import { Header1, Header2 } from "@/components/Header"
@@ -79,7 +78,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
             await createAppointment(appointment)
             onClose()
         } catch (error) {
-            const message = getRepositoryOperationErrorMessage(error)
+            const message = error instanceof Error ? error.message : undefined
             setSubmitError(message ?? "Appointment could not be booked")
         } finally {
             setIsSubmitting(false)

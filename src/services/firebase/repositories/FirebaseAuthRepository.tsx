@@ -4,12 +4,14 @@ import { signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChan
 import { AuthUser } from "@/domain/AuthUser";
 import AuthRepository, { AuthListener, AuthUnsubscribe } from "@/shared/repositories/AuthRepository";
 
+import { getErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError";
+
 export default function FirebaseAuthRepository(): AuthRepository {
     function subscribeToUser(listener: AuthListener): AuthUnsubscribe {
         return onAuthStateChanged(firebaseAuth, user => {
             if (!user) {
                 listener("error", null)
-                return
+                throw new Error(getErrorMessage("undefined-data"))
             }
 
             listener("success", {

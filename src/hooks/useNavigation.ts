@@ -23,7 +23,7 @@ export default function useNavigation<T extends NavigationParams>() {
     const { routerPush, routerReplace, routerDismiss, routerBack } = useNavigationRouter()
 
     const push = useCallback((path: RoutePath, flag: IntentData = Operations.Keep, params?: NavigationParams): boolean => {
-        console.log("push:", path, intentParameters.intent, intentParameters.intentSource, intentParameters.intentInit, params, routeParameters)
+        //console.log("push:", path, intentParameters.intent, intentParameters.intentSource, intentParameters.intentInit, params, routeParameters)
         switch (flag.operation) {
             case "keep":
                 return routerPush(path, intentParameters.intent, intentParameters.intentSource, { ...params, ...routeParameters })
@@ -34,7 +34,7 @@ export default function useNavigation<T extends NavigationParams>() {
         }
     }, [routerPush, routePath, intentParameters, routeParameters])
     const replace = useCallback((path: RoutePath, flag: IntentData = Operations.Keep, params?: NavigationParams): boolean => {
-        console.log("replace:", path, intentParameters.intent, intentParameters.intentSource, intentParameters.intentInit, params, routeParameters)
+        //console.log("replace:", path, intentParameters.intent, intentParameters.intentSource, intentParameters.intentInit, params, routeParameters)
         switch (flag.operation) {
             case "keep":
                 return routerReplace(path, intentParameters.intent, intentParameters.intentSource, { ...params, ...routeParameters })
@@ -45,7 +45,7 @@ export default function useNavigation<T extends NavigationParams>() {
         }
     }, [routerReplace, routePath, intentParameters, routeParameters])
     const dismiss = useCallback((path: RoutePath, flag: IntentData = Operations.Keep, params?: NavigationParams): boolean => {
-        console.log("dismiss:", path, intentParameters.intent, intentParameters.intentSource, intentParameters.intentInit, params, routeParameters)
+        //console.log("dismiss:", path, intentParameters.intent, intentParameters.intentSource, intentParameters.intentInit, params, routeParameters)
         switch (flag.operation) {
             case "keep":
                 return routerDismiss(path, intentParameters.intent, intentParameters.intentSource, { ...params, ...routeParameters })

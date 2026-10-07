@@ -10,7 +10,7 @@ import { FirebaseVolunteerLikeDTO } from "@/services/firebase/models/FirebaseVol
 import VolunteerDogLikeRepository, { VolunteerDogLikesRepositoryListener } from "@/shared/repositories/VolunteerDogLikeRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
-import { getRepositoryOperationErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError";
+import { getFirestoreErrorMessage } from "@/services/firebase/FirebaseErrorHelpers";
 
 const modelConverter: FirestoreDataConverter<VolunteerDogLike, FirebaseVolunteerLikeDTO> = {
     toFirestore: (data: VolunteerDogLike) => {
@@ -60,7 +60,7 @@ export default function FirebaseVolunteerDogLikesRepository(): VolunteerDogLikeR
                 dogId: dog.id
             })
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
+            const e = getFirestoreErrorMessage(error)
             operationCallback("error", e)
             return;
         }
@@ -84,7 +84,7 @@ export default function FirebaseVolunteerDogLikesRepository(): VolunteerDogLikeR
                 await Promise.all(deletePromises)
             }
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
+            const e = getFirestoreErrorMessage(error)
             operationCallback("error", e)
             return
         }

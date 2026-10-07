@@ -1,24 +1,12 @@
-// import { getFirestoreErrorMessage } from "@fb/FirebaseErrorHelpers"
+export type RepositoryOperationError = "none" | "undefined-data"
 
-import { getFirestoreErrorMessage } from "@/services/firebase/FirebaseErrorHelpers"
-
-export type RepositoryOperationErrorEnum = "none" | "undefinedData"
-
-export function getRepositoryOperationUndefinedDataMessage() {
-    return getRepositoryOperationErrorMessage("undefinedData")
-}
-
-export function getRepositoryOperationErrorMessage(
-    error: any
-) : string {
-    const rError = (error as RepositoryOperationErrorEnum)
-    if (rError) {
-        switch (rError) {
-            case "undefinedData":
+export function getErrorMessage(error?: RepositoryOperationError): string {
+    if (error) {
+        switch (error) {
+            case "undefined-data":
                 return "Data not defined."
         }
     }
 
-    // TODO: ENABLE LAST LINE
-    return getFirestoreErrorMessage(error)
+    return "Unknown error. Please try again later."
 }

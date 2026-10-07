@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from "react"
 import { IntentNavigationParams, NavigationParams, useNavigationParameters } from "@/hooks/useNavigationParameters"
 import useNavigationRouter from "@/hooks/useNavigationRouter"
-import useNavigation from "./useNavigation"
 
 export default function useNavigationIntentRedirect() {
     const { intentParameters, routeParameters } = useNavigationParameters()

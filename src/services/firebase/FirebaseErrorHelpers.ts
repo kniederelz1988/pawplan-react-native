@@ -1,12 +1,23 @@
-import { FirebaseError } from "firebase/app";
+import { getErrorMessage, RepositoryOperationError } from "@/shared/repositories/utils/RepositoryOperationError";
 
-export function getFirestoreErrorMessage( error: unknown ) : string {
-    if (!(error instanceof FirebaseError)) {
-        return "An unexpected error occurred.";
+function getErrorCode(error: unknown): string | undefined {
+    if (
+        typeof error !== "object" ||
+        error === null ||
+        !("code" in error) ||
+        typeof error.code !== "string"
+    ) {
+        return undefined
     }
 
-    switch (error.code) {
-        case "permission-denied":
+    // RNFirebase codes may include a service prefix, such as "firestore/".
+    return error.code
+}
+
+export function getFirestoreErrorMessage(error: unknown): string {
+    const errorCode = getErrorCode(error)
+    switch (errorCode) {
+        case "firestore/permission-denied":
             return "You do not have permission to perform this action.";
         case "unauthenticated":
             return "Please sign in.";
@@ -17,8 +28,9 @@ export function getFirestoreErrorMessage( error: unknown ) : string {
     return "Something went wrong.";
 }
 
-export function getAuthErrorMessage(code: string) : string {
-    switch(code) {
+export function getAuthErrorMessage(error: unknown): string {
+    const errorCode = getErrorCode(error)
+    switch (errorCode) {
         case "auth/invalid-email":
             return "E-Mail not valid"
         case "auth/email-already-in-use":
@@ -29,5 +41,5 @@ export function getAuthErrorMessage(code: string) : string {
             return "Password not valid"
     }
 
-    return "Unknown error"
+    return getErrorMessage(error as RepositoryOperationError)
 }

@@ -20,16 +20,12 @@ export function useAppointmentRepository() {
         try {
             const id = await appointmentRepository.createAppointment(appointment)
             showCreateAppointmentSuccessToast()
-            
+
             return id
         } catch (error) {
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : String(error);
-
-            showCreateAppointmentFailedToast(message);
-            throw error;
+            const message = error instanceof Error ? error.message : undefined
+            showCreateAppointmentFailedToast(message)
+            throw error
         }
     }
 

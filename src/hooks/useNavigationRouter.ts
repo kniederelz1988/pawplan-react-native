@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 import { RoutePath, useRouter } from "expo-router"
-import { NavigationIntent, NavigationIntentSource, NavigationParams } from "./useNavigationParameters"
+
+import { NavigationIntent, NavigationIntentSource, NavigationParams } from "@/hooks/useNavigationParameters"
 
 export default function useNavigationRouter() {
     const { push, replace, canDismiss, dismissTo, canGoBack, back } = useRouter()

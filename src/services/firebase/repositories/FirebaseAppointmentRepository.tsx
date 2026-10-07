@@ -11,11 +11,12 @@ import { Dog } from "@/domain/Dog";
 import AppointmentRepository, { AppointmentRatingsListener, AppointmentsListener, AppointmentStatesListener } from "@/shared/repositories/AppointmentRepository";
 
 import { RepositoryOperationCallback } from "@/shared/repositories/utils/RepositoryOperationCallback";
-import { getRepositoryOperationErrorMessage, getRepositoryOperationUndefinedDataMessage } from "@/shared/repositories/utils/RepositoryOperationError";
+import { getErrorMessage } from "@/shared/repositories/utils/RepositoryOperationError";
 import { getDateCompareOperator, getDateSortOperator, RepositoryDateCompareEnum } from "@/shared/repositories/enums/RepositoryDate";
 
 import { dateValueToTimestamp, timestampToDateValue } from "@/services/firebase/utils/FirebaseExtensions";
 import { now } from "@/domain/utils/TimeHelpers";
+import { getFirestoreErrorMessage } from "@/services/firebase/FirebaseErrorHelpers";
 
 const appointmentStatusToNumber = (status: AppointmentStatusEnum): number => {
     const statusMap: Record<AppointmentStatusEnum, number> = {
@@ -370,27 +371,32 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         appointment: Appointment
     ): Promise<string> {
         if (!appointment)
-            throw new Error(getRepositoryOperationErrorMessage("undefinedData"))
+            throw new Error(getErrorMessage("undefined-data"))
 
-        const appointmentsCollection = collection(firestore, collectionName)
-            .withConverter(appointmentConverter)
+        try {
+            const appointmentsCollection = collection(firestore, collectionName)
+                .withConverter(appointmentConverter)
 
-        const t = await addDoc(appointmentsCollection, appointment)
+            const t = await addDoc(appointmentsCollection, appointment)
 
-        const state: AppointmentStatus = {
-            appointmentId: t.id,
-            volunteerId: appointment.volunteerId,
-            dogId: appointment.dogId,
-            status: "pending",
-            updateAt: now(),
-            updatedBy: appointment.volunteerId
+            const state: AppointmentStatus = {
+                appointmentId: t.id,
+                volunteerId: appointment.volunteerId,
+                dogId: appointment.dogId,
+                status: "pending",
+                updateAt: now(),
+                updatedBy: appointment.volunteerId
+            }
+
+            const statusCollection = collection(firestore, statusCollectionName)
+                .withConverter(statusConverter)
+
+            await setDoc(doc(statusCollection, t.id), state)
+            return t.id
         }
-
-        const statusCollection = collection(firestore, statusCollectionName)
-            .withConverter(statusConverter)
-
-        await setDoc(doc(statusCollection, t.id), state)
-        return t.id
+        catch (error) {
+            throw new Error(getFirestoreErrorMessage(error))
+        }
     }
 
     async function updateAppointment(
@@ -398,8 +404,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback
     ) {
         if (!appointment?.id) {
-            const e = getRepositoryOperationErrorMessage("undefinedData")
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -408,13 +413,11 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
                 .withConverter(appointmentConverter)
 
             await setDoc(doc(c, appointment.id), appointment)
-        } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
-            return;
-        }
 
-        operationCallback("success")
+            operationCallback("success")
+        } catch (error) {
+            operationCallback("error", getFirestoreErrorMessage(error))
+        }
     }
     async function updateAppointmentStatus(
         appointment: Appointment,
@@ -422,8 +425,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback
     ) {
         if (!appointment?.id || !status) {
-            const e = getRepositoryOperationErrorMessage("")
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -432,13 +434,11 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
                 .withConverter(statusConverter)
 
             await setDoc(doc(c, appointment.id), status)
-        } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
-            return;
-        }
 
-        operationCallback("success")
+            operationCallback("success")
+        } catch (error) {
+            operationCallback("error", getFirestoreErrorMessage(error))
+        }
     }
 
     async function createAppointmentRating(
@@ -447,8 +447,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback
     ) {
         if (!appointment?.id || !rating) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -458,8 +457,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
 
             await setDoc(doc(ratingCollection, appointment.id), rating)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
@@ -471,8 +469,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback
     ) {
         if (!appointment?.id || !rating) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -482,8 +479,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
 
             await updateDoc(doc(ratingCollection, appointment.id), rating)
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
@@ -495,8 +491,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
         operationCallback: RepositoryOperationCallback
     ) {
         if (!appointment?.id) {
-            const e = getRepositoryOperationUndefinedDataMessage()
-            operationCallback("error", e)
+            operationCallback("error", getErrorMessage("undefined-data"))
             return
         }
 
@@ -511,8 +506,7 @@ export default function FirebaseAppointmentRepository(): AppointmentRepository {
 
             await deleteDoc(doc(statusCollection, appointment.id))
         } catch (error) {
-            const e = getRepositoryOperationErrorMessage(error)
-            operationCallback("error", e)
+            operationCallback("error", getFirestoreErrorMessage(error))
             return;
         }
 
