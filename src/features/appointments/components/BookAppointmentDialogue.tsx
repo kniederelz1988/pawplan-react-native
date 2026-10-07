@@ -89,8 +89,9 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
     return (
         <Pressable 
             style={[dialogStyles.dialogContainer, layoutStyles.defaultColumnContainer]} 
-            accessible
+            accessible={false}
             accessibilityViewIsModal
+            onPress={() => {}}
         >
             <Divider>
                 <Header1>Choose a date</Header1>

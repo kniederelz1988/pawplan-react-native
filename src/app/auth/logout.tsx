@@ -43,7 +43,7 @@ export default function LogoutModal() {
 
                     <Space />
 
-                    <Button title="LogOut" onPress={onLogOutPress} />
+                    <Button title="Log out" onPress={onLogOutPress} />
                 </View>
             </Pressable>
         </Pressable>
