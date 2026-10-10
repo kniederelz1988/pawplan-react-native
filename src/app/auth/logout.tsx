@@ -1,7 +1,10 @@
 import { useEffect, useCallback } from "react"
-import { Pressable, View, Button } from "react-native"
+import { Pressable, View } from "react-native"
+import { LogOut, X } from "lucide-react-native"
 
-import useResponsiveStyles from "@/hooks/useResponsiveStyles";
+import { withPressableButton } from "@/hocs/withPressableButton"
+
+import useResponsiveStyles from "@/hooks/useResponsiveStyles"
 
 import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider"
 
@@ -11,7 +14,8 @@ import Divider from "@/components/Divider"
 import { Header1 } from "@/components/Header"
 import Space from "@/components/Space"
 
-import colors from "@/styles/Colors"
+const CancelButton = withPressableButton(X)
+const LogoutButton = withPressableButton(LogOut)
 
 export default function LogoutModal() {
     const { dialogStyles, layoutStyles } = useResponsiveStyles()
@@ -39,11 +43,11 @@ export default function LogoutModal() {
                 <Space />
 
                 <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
-                    <Button title="Cancel" color={colors.secondaryButtonColor} onPress={toSource} />
+                    <CancelButton title="Cancel" variant="cancel" onPress={toSource} />
 
                     <Space />
 
-                    <Button title="Log out" onPress={onLogOutPress} />
+                    <LogoutButton title="Log out" onPress={onLogOutPress} />
                 </View>
             </Pressable>
         </Pressable>

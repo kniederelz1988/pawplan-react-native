@@ -12,8 +12,6 @@ describe("DateButton", () => {
         await render(
             <DateButton
                 date={date}
-                isDisabled={false}
-                isSelected={false}
                 onSubmit={onSubmit}
             />
         )
@@ -30,14 +28,13 @@ describe("DateButton", () => {
         await render(
             <DateButton
                 date={date}
-                isDisabled={false}
-                isSelected
+                state={{ checked: true }}
                 onSubmit={jest.fn()}
             />
         )
 
         const button = screen.getByRole("button")
-        expect(button).toBeSelected()
+        expect(button.props.accessibilityState).toMatchObject({ checked: true })
         expect(button).toBeEnabled()
     })
 
@@ -47,8 +44,7 @@ describe("DateButton", () => {
         await render(
             <DateButton
                 date={date}
-                isDisabled
-                isSelected={false}
+                state={{ disabled: true }}
                 onSubmit={onSubmit}
             />
         )

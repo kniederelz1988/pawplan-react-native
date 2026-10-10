@@ -5,42 +5,37 @@ export const menuStylesCollection = StylesheetCollection.create({
     marginLeft: "auto",
     marginTop: 64,
     marginRight: 16,
-    marginBottom: "auto"
+    marginBottom: "auto",
+
+    compact: { margin: 32 },
   },
 
   menuContainer: {
-    minWidth: 180,
-    backgroundColor: "white",
+    minWidth: 240,
+
+    padding: 8,
+
     borderRadius: 8,
-    paddingVertical: 8,
+
+    backgroundColor: "white",
   },
 
-  menuItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-
-    height: 32,
-
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
+  headerMenuButton: {
+    margin: 16,
 
     justifyContent: "center",
-
-    backgroundColor: "white",
+    alignContent: "center"
   },
-  menuItemHover: {
-    fontWeight: "bold"
+  headerMenuButtonText: {
+    fontSize: 28,
+    fontFamily: "serif",
+    textTransform: "capitalize"
   },
 
   menuButton: {
-    marginEnd: 16,
-    paddingHorizontal: 8,
+    margin: 4,
+    padding: 8,
 
-    width: 16,
-    height: 16,
-
-    fontSize: 28,
-    textTransform: "capitalize"
-  },
+    borderRadius: 2
+  }
 });

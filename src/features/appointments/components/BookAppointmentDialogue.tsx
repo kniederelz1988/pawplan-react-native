@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Button, Pressable, Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 
 import { CalendarDate, CalendarDateTime } from "@internationalized/date"
 
@@ -18,6 +18,11 @@ import { ListView } from "@/components/ListView"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 import { useResponsiveColumnBasedOnType } from "@/hooks/useResponsiveColumn"
+import { withPressableButton } from "@/hocs/withPressableButton"
+import { Send, X } from "lucide-react-native"
+
+const CancelButton = withPressableButton(X)
+const SubmitButton = withPressableButton(Send)
 
 type AppointmentDialogueProps = {
     dogId?: string,
@@ -86,11 +91,11 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
     }
 
     return (
-        <Pressable 
-            style={[dialogStyles.dialogContainer, layoutStyles.defaultColumnContainer]} 
+        <Pressable
+            style={[dialogStyles.dialogContainer, layoutStyles.defaultColumnContainer]}
             accessible={false}
             accessibilityViewIsModal
-            onPress={() => {}}
+            onPress={() => { }}
         >
             <Divider>
                 <Header1>Choose a date</Header1>
@@ -108,8 +113,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
                 numColumns={dateColumnCount}
                 keyExtractor={(item) => item.toString()}
                 renderItem={(item) => <DateButton
-                    isDisabled={false}
-                    isSelected={item === date}
+                    state={{ checked: item === date }}
                     date={item}
                     onSubmit={setDate}
                 />}
@@ -127,8 +131,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
                 numColumns={timeColumnCount}
                 keyExtractor={(item) => item.toString()}
                 renderItem={(item) => <TimeButton
-                    isDisabled={!date}
-                    isSelected={item === time}
+                    state={{ checked: item === time, disabled: !date }}
                     time={item}
                     onSubmit={setTime}
                 />}
@@ -148,14 +151,13 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
             <Space />
 
             <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
-                <Button title="Cancel" color={"grey"} onPress={onClose} />
+                <CancelButton title="Cancel" variant={"cancel"} onPress={onClose} />
 
                 <Space />
 
-                <Button
+                <SubmitButton
                     title={isSubmitting ? "Submitting..." : "Submit"}
-                    disabled={!time || !volunteer?.id || isSubmitting}
-                    accessibilityState={{
+                    state={{ 
                         disabled: !time || !volunteer?.id || isSubmitting,
                         busy: isSubmitting
                     }}

@@ -5,6 +5,11 @@ import BookAppointmentDialogue from "@/features/appointments/components/BookAppo
 import { useAppointmentRepository } from "@/shared/repositories/hooks/AppointmentHooks"
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
 
+jest.mock("lucide-react-native", () => ({
+    Send: () => null,
+    X: () => null,
+}))
+
 jest.mock("@/shared/repositories/hooks/AppointmentHooks", () => ({
     useAppointmentRepository: jest.fn(),
 }))

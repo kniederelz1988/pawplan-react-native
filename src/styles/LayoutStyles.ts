@@ -10,6 +10,9 @@ export const layoutStylesCollection = StylesheetCollection.create({
     flex: 1
   },
 
+  gapNone: {
+    gap: 0
+  },
   gapSmall: {
     gap: 4,
 
@@ -24,6 +27,25 @@ export const layoutStylesCollection = StylesheetCollection.create({
     gap: 16,
 
     large: { gap: 32 }
+  },
+
+  paddingNone: {
+    padding: 0
+  },
+  paddingSmall: {
+    padding: 4,
+
+    large: { padding: 8 }
+  },
+  paddingMid: {
+    padding: 8,
+
+    large: { padding: 16 }
+  },
+  paddingLarge: {
+    padding: 16,
+
+    large: { padding: 32 }
   },
 
 

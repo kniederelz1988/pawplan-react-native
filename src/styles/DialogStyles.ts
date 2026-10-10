@@ -10,9 +10,7 @@ export const dialogStyleCollection = StylesheetCollection.create({
   },
 
   dialogContainer: {
-    marginVertical: "auto",
-    marginHorizontal: "auto",
-    
+    margin: "auto",
     padding: 16,
 
     minWidth: 180,

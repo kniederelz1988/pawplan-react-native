@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react"
-import { Pressable, View, Button } from "react-native"
+import { Pressable, View } from "react-native"
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 import useNavigation from "@/hooks/useNavigation";
@@ -9,7 +9,11 @@ import Divider from "@/components/Divider"
 import { Header1 } from "@/components/Header"
 import Space from "@/components/Space"
 
-import colors from "@/styles/Colors"
+import { withPressableButton } from "@/hocs/withPressableButton";
+import { LogIn, X } from "lucide-react-native";
+
+const CancelButton = withPressableButton(X)
+const LoginButton = withPressableButton(LogIn)
 
 export default function LoginModal() {
     const { dialogStyles, layoutStyles } = useResponsiveStyles()
@@ -40,14 +44,15 @@ export default function LoginModal() {
                 <Space />
 
                 <View style={[dialogStyles.dialogContainerButtons, layoutStyles.defaultRowContainer]}>
-                    <Button title="Cancel"
-                        accessibilityLabel="Close"
-                        color={colors.secondaryButtonColor}
+                    <CancelButton title="Cancel"
+                        variant="cancel" 
                         onPress={toSource} />
-
+                        
                     <Space />
 
-                    <Button accessibilityLabel="Log in" title="Log in" color={colors.primaryButtonColor} onPress={onLogInPress} />
+                    <LoginButton
+                        title="Log in"
+                        onPress={onLogInPress} />
                 </View>
             </Pressable>
         </Pressable>

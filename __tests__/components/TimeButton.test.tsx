@@ -11,8 +11,6 @@ describe("TimeButton", () => {
         await render(
             <TimeButton
                 time={time}
-                isDisabled={false}
-                isSelected={false}
                 onSubmit={onSubmit}
             />
         )
@@ -32,13 +30,12 @@ describe("TimeButton", () => {
         await render(
             <TimeButton
                 time={time}
-                isDisabled={false}
-                isSelected
+                state={{ checked: true }}
                 onSubmit={jest.fn()}
             />
         )
 
-        expect(screen.getByRole("button")).toBeSelected()
+        expect(screen.getByRole("button").props.accessibilityState).toMatchObject({ checked: true })
     })
 
     it("exposes disabled state", async () => {
@@ -47,8 +44,7 @@ describe("TimeButton", () => {
         await render(
             <TimeButton
                 time={time}
-                isDisabled
-                isSelected={false}
+                state={{ disabled: true }}
                 onSubmit={jest.fn()}
             />
         )

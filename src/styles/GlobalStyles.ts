@@ -58,6 +58,10 @@ export const globalStyleCollection = StylesheetCollection.create({
     fontSize: 16
   },
 
+  textBold: {
+    fontWeight: "bold"
+  },
+
   dividerViewStyle: {
     marginBlockStart: 6,
     marginBlockEnd: 4,

@@ -1,14 +1,21 @@
 import { Pressable } from "react-native";
+import { LogIn, LogOut, X } from "lucide-react-native";
+
+import { withPressableButton } from "@/hocs/withPressableButton";
 
 import useNavigation from "@/hooks/useNavigation";
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 
 import { useAuthContext } from "@/shared/auth/contexts/AuthContextProvider";
 
-import PressableButton from "@/components/PressableButton";
 import Divider from "@/components/Divider";
 import { Header1 } from "@/components/Header";
 import Space from "@/components/Space";
+import colors from "@/styles/Colors";
+
+const LoginButton = withPressableButton(LogIn)
+const LogoutButton = withPressableButton(LogOut)
+const CloseButton = withPressableButton(X)
 
 export default function MainMenu() {
     const { dialogStyles, menuStyles } = useResponsiveStyles()
@@ -23,7 +30,7 @@ export default function MainMenu() {
 
             onPress={back}
         >
-            <Pressable style={[menuStyles.menuDialogue, menuStyles.menuContainer]}
+            <Pressable style={[dialogStyles.dialogContainer, menuStyles.menuDialogue, menuStyles.menuContainer]}
                 importantForAccessibility="yes"
             >
 
@@ -33,30 +40,37 @@ export default function MainMenu() {
 
                 <Space />
 
-                <PressableButton
-                        title="Home"
-                        onPress={() => { replace("/") }}
-                    />
 
                 {!isLoggedIn && (
-                    <PressableButton
-                        title="Log in"
-                        onPress={() => { replace("/auth/login") }}
+                    <LoginButton 
+                        style={menuStyles.menuButton}
+                        title="Sign in"
+                        color={colors.defaultButtonText}
+                        onPress={() => { replace("/auth/login")}}
                     />
                 )}
 
                 {isLoggedIn && (
-                    <PressableButton
+                    <LogoutButton 
+                        style={menuStyles.menuButton}
                         title="Sign out"
-                        onPress={() => { replace("/auth/logout") }}
+                        color={colors.defaultButtonText}
+                        onPress={() => { replace("/auth/logout")}}
                     />
                 )}
 
-                <PressableButton
+                <Space />
+                <Space />
+                <Space />
+
+                <CloseButton
+                    style={menuStyles.menuButton}
                     title="Close menu"
+                    variant="cancel"
+                    color={colors.defaultButtonText}
                     onPress={back}
                 />
             </Pressable>
-        </Pressable>
+        </Pressable >
     );
 }

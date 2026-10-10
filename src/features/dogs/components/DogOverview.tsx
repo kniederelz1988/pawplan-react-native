@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Button, Image, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
+import { PawPrint } from "lucide-react-native";
 
 import useNavigation, { Operations } from "@/hooks/useNavigation";
 
@@ -13,13 +14,16 @@ import DogSizeIcon from "@/features/dogs/components/DogSizeIcon";
 import useDogsCollection from "@/shared/repositories/hooks/DogHooks";
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks";
 
-import { Header2, SubHeader2 } from "@/components/Header";
+import { Header1, Header2, SubHeader1, SubHeader2 } from "@/components/Header";
 import Space from "@/components/Space";
 import Divider from "@/components/Divider";
 import { ListView } from "@/components/ListView";
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 import { useResponsiveColumnBasedOnSize } from "@/hooks/useResponsiveColumn";
+import { withPressableButton } from "@/hocs/withPressableButton";
+
+import colors from "@/styles/Colors";
 
 export function EmptyCard() {
     return <View style={{ flex: 1 }} />
@@ -28,6 +32,8 @@ export function EmptyCard() {
 type DogCardProps = {
     dog: Dog
 }
+
+const DetailsButton = withPressableButton(PawPrint)
 
 export function DogCard({ dog }: DogCardProps) {
     const { push } = useNavigation()
@@ -84,13 +90,16 @@ export function DogCard({ dog }: DogCardProps) {
                     <Space />
 
                     <View style={cardStyles.itemButtons}>
-                        <Button
-                            title="View details"
-                            accessibilityLabel={`View details for ${dog.name}`}
+
+                        <DetailsButton
+                            style={{ justifyContent: "center" }}
+                            title={`View details for ${dog.name}`}
+                            size={18}
+                            color={colors.defaultButtonText}
                             onPress={() => {
                                 if (!dog?.id)
                                     return
-                                
+
                                 push("/dogs/details", Operations.Clear, { dogId: dog.id })
                             }} />
                     </View>
@@ -115,29 +124,27 @@ export default function DogOverview() {
     }, [dogs, numColumns])
 
     return (
-        <>
-            <View style={[globalStyles.contentContainer]}>
-                <Divider >
-                    <Header2 accessibilityRole="header">Dogs</Header2>
-                </Divider>
+        <View style={[globalStyles.contentContainer]}>
+            <Divider >
+                <Header1 accessibilityRole="header">Dogs</Header1>
+            </Divider>
 
-                <SubHeader2 accessibilityRole="summary">
-                    {
-                        dogs.length === 0 ? "No dogs found..."
-                            : `${dogs.length} dogs found...`
-                    }
-                </SubHeader2>
+            <SubHeader1 accessibilityRole="summary">
+                {
+                    dogs.length === 0 ? "No dogs found..."
+                        : `${dogs.length} dogs found...`
+                }
+            </SubHeader1>
 
-                <Space />
+            <Space />
 
-                <ListView
-                    data={allElements}
-                    style={layoutStyles.list} containerStyle={[layoutStyles.listContainer, layoutStyles.gapLarge]} wrapperStyle={[layoutStyles.listWrapper, layoutStyles.gapLarge]}
-                    numColumns={numColumns}
-                    keyExtractor={(dog, index) => dog?.id ?? `empty-${index}`}
-                    renderItem={(dog) => dog ? <DogCard dog={dog} /> : <EmptyCard />}
-                />
-            </View>
-        </>
+            <ListView
+                data={allElements}
+                style={layoutStyles.list} containerStyle={[layoutStyles.listContainer, layoutStyles.gapLarge]} wrapperStyle={[layoutStyles.listWrapper, layoutStyles.gapLarge]}
+                numColumns={numColumns}
+                keyExtractor={(dog, index) => dog?.id ?? `empty-${index}`}
+                renderItem={(dog) => dog ? <DogCard dog={dog} /> : <EmptyCard />}
+            />
+        </View>
     )
 }

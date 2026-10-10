@@ -1,34 +1,37 @@
-import { Pressable, Text } from "react-native";
+import { Text } from "react-native";
 
 import { CalendarDate } from "@internationalized/date";
 
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
 import { dateValueToDate } from "@/domain/utils/TimeHelpers";
+import PressableButton from "@/components/PressableButton";
 
 type DateButtonProps = {
-    date: CalendarDate;
-    isDisabled: boolean;
-    isSelected: boolean;
-    onSubmit: (date: CalendarDate) => void;
+    date: CalendarDate,
+    state?: {
+        checked?: boolean,
+        disabled?: boolean,
+    },
+    onSubmit: (date: CalendarDate) => void
 };
-export function DateButton({ date, isDisabled, isSelected, onSubmit }: DateButtonProps) {
-    const { buttonStyles, globalStyles } = useResponsiveStyles()
+
+export function DateButton({ date, state, onSubmit }: DateButtonProps) {
+    const { layoutStyles, buttonStyles, globalStyles } = useResponsiveStyles()
 
     return (
-        <Pressable 
-            style={[buttonStyles.dateButton, isDisabled && buttonStyles.dateButtonDisabled, isSelected && buttonStyles.dateButtonSelected]}
-            disabled={isDisabled}
-            accessibilityRole="button"
-            accessibilityLabel={dateValueToDate(date).toLocaleDateString()}
-            accessibilityState={{ selected: isSelected, disabled: isDisabled }}
+        <PressableButton
+            style={[buttonStyles.dateButton, layoutStyles.defaultColumnContainer, layoutStyles.gapNone]}
+            textStyle={{ display: "none" }}
+            state={{ checked: state?.checked, disabled: state?.disabled }}
+            title={`Select ${dateValueToDate(date).toLocaleDateString()}`}
             onPress={() => onSubmit(date)}
         >
-            <Text style={[buttonStyles.dateButtonContent, globalStyles.textMedium]} accessible={false}>
-                {`${String(date.day).padStart(2, "0")}.${String(date.month).padStart(2, "0")}`}
+            <Text style={[globalStyles.textMedium, globalStyles.textBold, buttonStyles.defaultText]} accessible={false}>
+                {`${String(date.day).padStart(2, "0")}.${String(date.month).padStart(2, "0")}.`}
             </Text>
-            <Text style={[buttonStyles.dateButtonContent, globalStyles.textSmall]} accessible={false}>
+            <Text style={[globalStyles.textSmall, buttonStyles.defaultText]} accessible={false}>
                 {date.year}
             </Text>
-        </Pressable>
+        </PressableButton>
     );
 }

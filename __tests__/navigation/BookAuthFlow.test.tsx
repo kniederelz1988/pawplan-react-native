@@ -10,11 +10,18 @@ import {
 } from "expo-router/testing-library"
 
 jest.mock("lucide-react-native", () => ({
+    Calendar: () => null,
     Dog: () => null,
     Heart: () => null,
+    LogIn: () => null,
+    LogOut: () => null,
     Mars: () => null,
+    Menu: () => null,
+    PawPrint: () => null,
+    Send: () => null,
     Star: () => null,
     Venus: () => null,
+    X: () => null,
 }))
 
 describe("booking authentication flow", () => {

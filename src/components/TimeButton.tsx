@@ -1,32 +1,32 @@
-import { CalendarDateTime } from "@internationalized/date";
-import { Pressable, Text } from "react-native";
+import { CalendarDateTime } from "@internationalized/date"
+import { Text } from "react-native"
 
-import useResponsiveStyles from "@/hooks/useResponsiveStyles";
-import { getTimeAsString } from "@/domain/utils/TimeHelpers";
+import useResponsiveStyles from "@/hooks/useResponsiveStyles"
+import { getTimeAsString } from "@/domain/utils/TimeHelpers"
+import PressableButton from "./PressableButton"
 
 type TimeButtonProps = {
-    time: CalendarDateTime;
-    isDisabled: boolean;
-    isSelected: boolean;
-    onSubmit: (time: CalendarDateTime) => void;
+    time: CalendarDateTime
+    state?: {
+        checked?: boolean
+        disabled?: boolean
+    }
+    onSubmit: (time: CalendarDateTime) => void
 };
-export function TimeButton({ time, isDisabled, isSelected, onSubmit }: TimeButtonProps) {
-    const { globalStyles, buttonStyles } = useResponsiveStyles()
+export function TimeButton({ time, state, onSubmit }: TimeButtonProps) {
+    const { globalStyles, buttonStyles, layoutStyles } = useResponsiveStyles()
 
     return (
-        <Pressable style={[buttonStyles.dateButton, isDisabled && buttonStyles.dateButtonDisabled, isSelected && buttonStyles.dateButtonSelected]}
-            accessibilityRole="button"
-            accessibilityLabel={`Select ${getTimeAsString(time)}`}
-            accessibilityState={{
-                selected: isSelected,
-                disabled: isDisabled
-            }}
-            disabled={isDisabled}
+        <PressableButton
+            style={[buttonStyles.dateButton, layoutStyles.defaultColumnContainer, layoutStyles.gapNone]}
+            textStyle={{ display: "none" }}
+            state={{ checked: state?.checked, disabled: state?.disabled }}
+            title={`Select ${getTimeAsString(time)}`}
             onPress={() => onSubmit(time)}
         >
-            <Text style={[buttonStyles.dateButtonContent, globalStyles.textMedium]} accessible={false}>
+            <Text style={[globalStyles.textMedium, buttonStyles.defaultText]} accessible={false}>
                 {`${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}`}
             </Text>
-        </Pressable>
+        </PressableButton>
     );
 }

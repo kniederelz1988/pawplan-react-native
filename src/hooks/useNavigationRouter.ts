@@ -4,7 +4,7 @@ import { RoutePath, useRouter } from "expo-router"
 import { NavigationIntent, NavigationIntentSource, NavigationParams } from "@/hooks/useNavigationParameters"
 
 export default function useNavigationRouter() {
-    const { push, replace, canDismiss, dismissTo, canGoBack, back } = useRouter()
+    const { push, replace, navigate, canDismiss, dismissTo, canGoBack, back } = useRouter()
 
     const routerPush = useCallback((path: RoutePath, intent?: NavigationIntent, source?: NavigationIntentSource, params?: NavigationParams): boolean => {
         push({ pathname: path, params: { ...params, intent: intent, source: source } })
@@ -21,6 +21,10 @@ export default function useNavigationRouter() {
         dismissTo({ pathname: path, params: { ...params, intent: intent, source: source } })
         return true
     }, [canDismiss, dismissTo])
+    const routerNavigate = useCallback((path: RoutePath, intent?: NavigationIntent, source?: NavigationIntentSource, params?: NavigationParams) => {
+        navigate({ pathname: path, params: { ...params, intent: intent, source: source } })
+        return
+    }, [navigate])
     const routerBack = useCallback((): boolean => {
         if (!canGoBack())
             return false
@@ -31,5 +35,5 @@ export default function useNavigationRouter() {
 
     const routerHasNavigation = useCallback(() => (canGoBack() || canDismiss()), [canGoBack, canDismiss])
 
-    return { routerPush, routerReplace, routerDismiss, routerBack, routerHasNavigation }
+    return { routerPush, routerReplace, routerDismiss, routerNavigate, routerBack, routerHasNavigation }
 }

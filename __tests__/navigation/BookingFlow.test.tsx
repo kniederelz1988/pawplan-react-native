@@ -6,9 +6,16 @@ import { dateValueToDate, getDateFromToday, getDateTime, getTimeAsString } from 
 jest.mock("lucide-react-native", () => ({
     Dog: () => null,
     Heart: () => null,
+    Calendar: () => null,
+    LogIn: () => null,
+    LogOut: () => null,
     Mars: () => null,
+    Menu: () => null,
+    PawPrint: () => null,
+    Send: () => null,
     Star: () => null,
     Venus: () => null,
+    X: () => null,
 }))
 
 async function openBookingForLuna() {
@@ -69,7 +76,7 @@ describe("booking navigation flow", () => {
         const { router, screen } = await openBookingForLuna()
 
         const date = getDateFromToday(1)
-        const dateLabel = dateValueToDate(date).toLocaleDateString()
+        const dateLabel = `Select ${dateValueToDate(date).toLocaleDateString()}`
 
         await fireEvent.press(
             screen.getByRole("button", {
@@ -161,7 +168,7 @@ describe("booking navigation flow", () => {
 
         await fireEvent.press(
             screen.getByRole("button", {
-                name: "Close"
+                name: "Cancel"
             })
         )
 

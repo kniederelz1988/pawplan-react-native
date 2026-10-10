@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Text, View, Button, Image } from "react-native"
+import { Text, View, Image } from "react-native"
 
 import { useVolunteer } from "@/shared/repositories/hooks/VolunteerHooks"
 
@@ -20,6 +20,11 @@ import { ListView } from "@/components/ListView"
 
 import useNavigation, { Operations } from "@/hooks/useNavigation"
 import useResponsiveStyles from "@/hooks/useResponsiveStyles";
+import { withPressableButton } from "@/hocs/withPressableButton"
+import { Calendar } from "lucide-react-native"
+import colors from "@/styles/Colors"
+
+const BookAppointmentButton = withPressableButton(Calendar)
 
 type DogDetailsCardProps = {
     dog: Dog
@@ -86,9 +91,11 @@ function DogDetailsCard({ dog }: DogDetailsCardProps) {
                     <Space />
 
                     <View style={cardStyles.itemButtons}>
-                        <Button
-                            title="Book appointment"
-                            accessibilityLabel={`Book an appointment with ${dog.name}`}
+                        <BookAppointmentButton
+                            style={{ justifyContent: "center" }}
+                            title={`Book an appointment with ${dog.name}`}
+                            size={18}
+                            color={colors.defaultButtonText}
                             onPress={() => {
                                 push("/appointments/book", Operations.New("/appointments/book"), { dogId: dog.id ?? "" })
                             }} />
@@ -124,11 +131,13 @@ export default function DogDetails({ dog }: DogDetailsProps) {
 
             <View style={layoutStyles.rowContent}>
                 <Divider>
-                    <Header2 accessibilityRole="header" style={globalStyles.textCenter}>Description</Header2>
+                    <Header1 accessibilityRole="header" style={globalStyles.textCenter}>About {dog.name}</Header1>
                 </Divider>
 
                 <Text accessibilityRole="text">{dog.description}</Text>
 
+                <Space />
+                <Space />
                 <Space />
 
                 <Divider>
