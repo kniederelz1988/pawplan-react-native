@@ -16,7 +16,7 @@ export type PressableButtonProps = {
 interface PressableButtonState {
     disabled?: boolean | undefined;
     selected?: boolean | undefined;
-    checked?: boolean | 'mixed' | undefined;
+    checked?: boolean | undefined;
     busy?: boolean | undefined;
     expanded?: boolean | undefined;
 }
