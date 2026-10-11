@@ -2,12 +2,12 @@ const colors = {
     defaultColor: "white",
     disabledColor: "",
 
-    highlightColor: "hsl(207, 90%, 54%);",
+    highlightColor: "rgb(32, 148, 243)",
 
-    defaultButtonBackground: "rgb(33, 150, 243)",
-    defaultButtonBackground_onHover: "rgb(19, 107, 179)",
-    defaultButtonBackground_onSelected: "rgb(109, 189, 255)",
-    defaultButtonBackground_onDisabled: "rgba(33, 149, 243, 0.49)",
+    defaultButtonBackground: "rgb(19, 107, 179)",
+    defaultButtonBackground_onHover: "rgb(24, 137, 230)",
+    defaultButtonBackground_onSelected: "rgb(32, 148, 243)",
+    defaultButtonBackground_onDisabled: "rgba(33, 149, 243, 0.5)",
 
     defaultButtonText: "white",
     defaultButtonText_onHover: "white",
@@ -16,8 +16,8 @@ const colors = {
 
     cancelButtonBackground: "rgb(128, 128, 128)",
     cancelButtonBackground_onHover: "rgb(100, 100, 100)",
-    cancelButtonBackground_onSelected: "#2195f37c",
-    cancelButtonBackground_onDisabled: "#2195f37c",
+    cancelButtonBackground_onSelected: "rgba(33, 149, 243, 0.5)",
+    cancelButtonBackground_onDisabled: "rgba(33, 149, 243, 0.5)",
 
     cancelButtonText: "white",
     cancelButtonText_onHover: "white",
@@ -25,6 +25,7 @@ const colors = {
     cancelButtonText_onDisabled: "white",
 
     plainButtonBackground: "transparent",
+
     plainButtonText: "black"
 
 }

@@ -113,7 +113,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
                 numColumns={dateColumnCount}
                 keyExtractor={(item) => item.toString()}
                 renderItem={(item) => <DateButton
-                    state={{ checked: item === date }}
+                    state={{ selected: item === date }}
                     date={item}
                     onSubmit={setDate}
                 />}
@@ -131,7 +131,7 @@ export default function BookAppointmentDialogue({ dogId, onClose }: AppointmentD
                 numColumns={timeColumnCount}
                 keyExtractor={(item) => item.toString()}
                 renderItem={(item) => <TimeButton
-                    state={{ checked: item === time, disabled: !date }}
+                    state={{ selected: item === time, disabled: !date }}
                     time={item}
                     onSubmit={setTime}
                 />}

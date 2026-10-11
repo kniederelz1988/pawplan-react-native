@@ -9,7 +9,7 @@ import PressableButton from "@/components/PressableButton";
 type DateButtonProps = {
     date: CalendarDate,
     state?: {
-        checked?: boolean,
+        selected?: boolean,
         disabled?: boolean,
     },
     onSubmit: (date: CalendarDate) => void
@@ -22,7 +22,7 @@ export function DateButton({ date, state, onSubmit }: DateButtonProps) {
         <PressableButton
             style={[buttonStyles.dateButton, layoutStyles.defaultColumnContainer, layoutStyles.gapNone]}
             textStyle={{ display: "none" }}
-            state={{ checked: state?.checked, disabled: state?.disabled }}
+            state={{ selected: state?.selected, disabled: state?.disabled }}
             title={`Select ${dateValueToDate(date).toLocaleDateString()}`}
             onPress={() => onSubmit(date)}
         >

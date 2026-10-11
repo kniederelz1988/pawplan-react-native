@@ -129,7 +129,7 @@ export default function DogOverview() {
                 <Header1 accessibilityRole="header">Dogs</Header1>
             </Divider>
 
-            <SubHeader1 accessibilityRole="summary">
+            <SubHeader1>
                 {
                     dogs.length === 0 ? "No dogs found..."
                         : `${dogs.length} dogs found...`

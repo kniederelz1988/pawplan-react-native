@@ -18,7 +18,11 @@ export function withPressableButton(Icon: LucideIcon) {
 
         return (
             <PressableButton style={[layoutStyles.defaultRowContainer, layoutStyles.gapSmall, style]} {...props}>
-                <Icon width={width} height={height} size={size} color={color} fill={fill ?? "transparent"}/>
+                <Icon aria-hidden={true}
+                    focusable={false} 
+                    width={width} 
+                    height={height} 
+                    size={size} color={color} fill={fill ?? "transparent"}/>
             </PressableButton>
         )
     }

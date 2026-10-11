@@ -144,7 +144,7 @@ export default function DogDetails({ dog }: DogDetailsProps) {
                     <Header2 accessibilityRole="header" style={globalStyles.textCenter}>Ratings</Header2>
                 </Divider>
 
-                <SubHeader2 accessibilityRole="summary">
+                <SubHeader2>
                     {
                         ratings.length > 0
                             ? `${ratings.length} ratings found..`

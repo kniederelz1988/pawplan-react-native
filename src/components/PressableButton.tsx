@@ -38,8 +38,8 @@ export default function PressableButton({
     return <Pressable
         style={[
             buttonStyles.defaultButton, buttonVariant.base, style,
-            (state?.selected || hoverState) && buttonVariant.hover,
-            state?.checked && buttonVariant.selected,
+            hoverState && buttonVariant.hover,
+            state?.selected && buttonVariant.selected,
             state?.disabled && buttonVariant.disabled,
         ]}
         accessible
@@ -56,8 +56,8 @@ export default function PressableButton({
         <Text
             style={[
                 buttonStyles.defaultText, buttonVariant.textBase, textStyle,
-                (state?.selected || hoverState) && buttonVariant.textHover,
-                state?.checked && buttonVariant.textSelected,
+                hoverState && buttonVariant.textHover,
+                state?.selected && buttonVariant.textSelected,
                 state?.disabled && buttonVariant.textDisabled,
             ]}
             accessible={false}

@@ -8,7 +8,7 @@ import PressableButton from "./PressableButton"
 type TimeButtonProps = {
     time: CalendarDateTime
     state?: {
-        checked?: boolean
+        selected?: boolean
         disabled?: boolean
     }
     onSubmit: (time: CalendarDateTime) => void
@@ -20,7 +20,7 @@ export function TimeButton({ time, state, onSubmit }: TimeButtonProps) {
         <PressableButton
             style={[buttonStyles.dateButton, layoutStyles.defaultColumnContainer, layoutStyles.gapNone]}
             textStyle={{ display: "none" }}
-            state={{ checked: state?.checked, disabled: state?.disabled }}
+            state={{ selected: state?.selected, disabled: state?.disabled }}
             title={`Select ${getTimeAsString(time)}`}
             onPress={() => onSubmit(time)}
         >
