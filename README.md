@@ -10,6 +10,17 @@ The current vertical slice covers the path from browsing dogs to viewing details
 
 **Live demo:** https://pawplan-reactnative.vercel.app/dogs/overview
 
+## Quick reviewer walkthrough
+
+Start with the [web demo](https://pawplan-reactnative.vercel.app/dogs/overview), which presents the Expo web version of this migration prototype.
+
+1. Browse the dog overview and open an individual dog.
+2. Start an appointment booking. If authentication is requested, follow the login flow and check that the selected dog remains the booking target.
+3. Inspect the date/time controls and their selected, disabled and submitting states. Cancel the flow to return to the originating dog.
+4. For the implementation, read the **Architecture**, **Accessibility** and **Testing** sections below. The automated checks cover authentication redirects, preserved booking intent, cancellation and accessible component state.
+
+Mock repositories are the default while the architecture is evaluated. This walkthrough describes the intended inspection route; it is not a claim that a production appointment is created. The web demo does not substitute for native-device accessibility validation. VoiceOver/TalkBack checks remain part of the ongoing native accessibility pass.
+
 ## What this prototype demonstrates
 
 The current implementation focuses on a small but complete workflow:
